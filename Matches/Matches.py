@@ -64,20 +64,27 @@ class Matches(object):
 
     def respondMove(self, bot, update):
 
-        rem = (self.currentNumber-1)%4
+        if self.currentNumber == 1:
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="You win, congrats!\nStart again?",
+                reply_markup=self.again_choice
+            )
+        else:
+            rem = (self.currentNumber-1)%4
 
-        answer = rem
+            answer = rem
 
-        if rem==0:
-            answer = random.randint(1,3)
+            if rem==0:
+                answer = random.randint(1,3)
 
-        self.currentNumber -= answer
+            self.currentNumber -= answer
 
-        bot.sendMessage(
-            chat_id=update.message.chat.id,
-            text="I take " + str(answer) + ". Current number of matches: " + str(self.getCurrentNumber()) + "\nYour turn",
-            reply_markup=self.three_choice
-        )
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="I take " + str(answer) + ". Current number of matches: " + str(self.getCurrentNumber()) + "\nYour turn",
+                reply_markup=self.three_choice
+            )
 
 
     def getCurrentNumber(self):
