@@ -173,8 +173,7 @@ def matches_choice(bot, update):
 
 def main():
     """Run bot."""
-    #updater = Updater("496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg")
-    updater = Updater("337683580:AAGYNf_8C6Etcf-6uH0xqnd2DVMuguSgk6o")
+    updater = Updater("496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
