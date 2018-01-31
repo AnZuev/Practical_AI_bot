@@ -1,4 +1,4 @@
-from big_xo.libs import *
+from Big_xo.libs import *
 
 
 class Board:
@@ -13,8 +13,8 @@ class Board:
 
 
 
-class Game:
-    def __init__(self, player1, player2, board_size = 100):
+class BigGame:
+    def __init__(self, player1, player2, bot, update, board_size = 100):
         self.board = Board(board_size)
         self.players = dict({
             '1': player1,
@@ -29,27 +29,45 @@ class Game:
         self.winner = None
 
         self.current_player = PLAYER_TYPE['x']
-        self.players[str(self.current_player)].up()
-        print(self.board.board)
+        self.players[str(self.current_player)].up(bot, update)
+        bot.sendMessage(
+            chat_id=update.message.chat.id,
+            text=self.board.board
+        )
 
-    def make_a_move(self, player, cell):
+    def make_a_move(self, player, cell, bot, update):
         if self.finished:
-            print("Game is already finished, winner is {}".format(self.winner.name))
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="Game is already finished, winner is {}".format(self.winner.name)
+            )
             return
         if player != self.current_player:
-            print("{} is about to move, not {}".format(self.current_player.name, self.players[str(player)].name))
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="{} is about to move, not {}".format(self.current_player.name, self.players[str(player)].name)
+            )
         if not self.board.update(player, cell):
-            print("Move {} is invalid".format(cell))
-            self.players[str(self.current_player)].up()
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="Move {} is invalid".format(cell)
+            )
+            self.players[str(self.current_player)].up(bot, update)
         else:
-            print(self.board.board)
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text=self.board.board
+            )
             self.check_ending()
-            print("\n")
+            # print("\n")
             self.current_player = -1 * self.current_player
             if not self.finished:
-                self.players[str(self.current_player)].up()
+                self.players[str(self.current_player)].up(bot, update)
             else:
-                print("Game is finished. {} won".format(self.winner.name))
+                bot.sendMessage(
+                    chat_id=update.message.chat.id,
+                    text="Game is finished. {} won".format(self.winner.name)
+                )
 
     def check_ending(self):
         my_scores, opponent_scores = score_game(self.board.board, PLAYER_TYPE['x'])

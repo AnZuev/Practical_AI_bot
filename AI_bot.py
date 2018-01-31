@@ -1,15 +1,24 @@
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 from telegram import ReplyKeyboardMarkup as rkm
+from telegram import User
+
 from WolframAlpha_api.AI_bot_search import ask
-from TTTGame.Game import Game
 from Matches.Matches import Matches
+from TTTGame.Game import Game
+from Big_xo.game import *
+from Big_xo.players import *
 
 
 main_menu = rkm([['WolframAlpha search'], ['Matches'], ['Tic tac toe'], ['XO 5 in a row']], one_time_keyboard=True)
 show_menu = rkm([['Choose another activity']])
+users = {}
 
 
 def start(bot, update):
+    global users
+    users[update.message.from_user.id] = {}
+    users[update.message.from_user.id]['matches'] = Matches()
+    users[update.message.from_user.id]['TTT'] = Game()
     bot.sendMessage(
         chat_id=update.message.chat.id,
         text='Hi, {}!\nI\'m glad to see you here.\nPlease, choose what you want to open.'.format(update.message.from_user.first_name),
@@ -39,7 +48,7 @@ def handle_choice(bot, update):
         handle_tic_tac_toe(bot, update)
 
     elif mes == 'XO 5 in a row':
-        handle_XO5
+        handle_XO5(bot, update)
 
     else:
         bot.sendMessage(
@@ -69,23 +78,23 @@ def handle_search(bot, update):
 
 
 def handle_matches(bot, update):
-    global matches
-    matches = Matches()
-
+    global users
     bot.sendMessage(
         chat_id=update.message.chat.id,
         text="Do you want to play first?",
-        reply_markup=matches.start_choice
+        reply_markup=users[update.message.from_user.id]['matches'].start_choice
     )
 
 
 def handle_tic_tac_toe(bot, update):
-    global game
-    game = Game()
-    game.start(bot, update)
+    global users
+    users[update.message.from_user.id]['TTT'].start(bot, update)
 
 
-def handle_XO5():
+def handle_XO5(bot, update):
+    #ai = AI("AI Player")
+    #human = Player("Human Player")
+    #g = BigGame(human, ai, bot, update, 10)
     pass
 
 
@@ -157,16 +166,20 @@ class MatchesStartAgainFilter(filters.BaseFilter):
 
 
 def difficulty(bot, update):
-    game.difficulty(bot, update)
+    global users
+    users[update.message.from_user.id]['TTT'].difficulty(bot, update)
 
 def order(bot, update):
-    game.order(bot, update)
+    global users
+    users[update.message.from_user.id]['TTT'].order(bot, update)
 
 def getPlayerMove(bot, update):
-    game.getPlayerMove(bot, update)
+    global users
+    users[update.message.from_user.id]['TTT'].getPlayerMove(bot, update)
 
 def matches_choice(bot, update):
-    matches.matches_choice(bot, update)
+    global users
+    users[update.message.from_user.id]['matches'].matches_choice(bot, update)
 
 
 
@@ -180,9 +193,6 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
-
-    game = Game()   # for Tic Tac Toe game
-    matches = Matches()
 
 
     menu_filter_instance = MenuFilter()
