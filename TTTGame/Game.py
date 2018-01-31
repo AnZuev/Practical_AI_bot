@@ -1,96 +1,119 @@
 from TTTGame import Board
 from TTTGame import AlphaBetaPrunning
+from telegram import ReplyKeyboardMarkup as rkm
+
+
 class Game:
 
-    def play(self):
+    def __init__(self):
         self.board = Board.Board()
         self.abp = AlphaBetaPrunning.AlphaBetaPrunning()
-        print("You will play as?\ntype X or O")
-        self.wish = input().upper()
-        if self.wish not in ("X", "O"):
-            self.wish="X"
-        print("Select level.\nEasy - 1\nMedium -2\nHard - 3\ntype 1 or 2 or 3.")
-        self.difficulty = input()
-        if self.difficulty =="1":
-            self.difficulty=1
-        if self.difficulty =="2":
-            self.difficulty=3
-        if self.difficulty =="3":
-            self.difficulty=9
-        else:    
-            self.difficulty = 3
-        print("New game started.")
-        while True:
-            self.__nextStep()
-            if self.board.getTurn().value == self.wish:
-                self.__status()
-            if self.board.isGameOver():
-                self.__printWinner()
-                if not self.__tryAgain():
-                    break
 
-    def __nextStep(self):
-        if self.board.getTurn().value == self.wish:
-            self.__getPlayerMove()
+
+    def start(self, bot, update):
+        choice = rkm([["Easy"], ["Medium"], ["Hard"]])
+        bot.sendMessage(
+            chat_id=update.message.chat.id,
+            text="Select difficulty level:",
+            reply_markup=choice
+        )
+
+
+    def difficulty(self, bot, update):
+        if update.message.text =="Easy":
+            self.difficulty=1
+        if update.message.text =="Medium":
+            self.difficulty=3
+        if update.message.text =="Hard":
+            self.difficulty=9
+
+        choice = rkm([['Sure!'], ['No, thanks']])
+        bot.sendMessage(
+            chat_id=update.message.chat.id,
+            text="Ok, " + update.message.text + "\nDo you want to play first?",
+            reply_markup=choice
+        )
+
+
+    def order(self, bot, update):
+        if update.message.text == 'No, thanks':
+            self.wish="O"
         else:
+            self.wish="X"
+        self.__status(bot, update)
+        self.__play(bot, update)
+
+
+    def __play(self, bot, update):
+        if self.board.getTurn().value == self.wish:
+            choice = rkm([['"1"', '"2"', '"3"'], ['"4"', '"5"', '"6"'], ['"7"', '"8"', '"9"']])
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="Your turn :)",
+                reply_markup=choice
+            )
+        else:
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="Well, my turn ... "
+            )
             self.abp.run(self.board.getTurn(), self.board, self.difficulty)
-    
-    def __status(self):
-        print(str(self.board))
-        
-    def __getPlayerMove(self):
-        print("Index of move: ")
-        try:
-            val = int(input()) - 1
-            if 0 > val or val > self.board.BOARD_SIDE ** 2:
-                print("Index must be an integer between 1 and %d." % self.board.BOARD_SIDE ** 2)
-            elif not self.board.move(val):
-                print("The selected index must be blank. This one is already Occupied.")
-        except ValueError:
-            print("Index must be an integer between 1 and %d." % self.board.BOARD_SIDE ** 2)
-     
-    def __printWinner(self):
+            if self.board.getTurn().value == self.wish:
+                self.__status(bot, update)
+            if self.board.isGameOver():
+                self.__printWinner(bot, update)
+                self.__tryAgainCheck(bot, update)
+            else:
+                self.__play(bot, update)
+
+
+    def __status(self, bot, update):
+        bot.sendMessage(
+            chat_id=update.message.chat.id,
+            text=str(self.board)
+        )
+
+
+    def getPlayerMove(self, bot, update):
+        val = int(update.message.text[1]) - 1
+        if not self.board.move(val):
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="The selected index must be blank, this one is already Occupied."
+            )
+        if self.board.getTurn().value == self.wish:
+            self.__status(bot, update)
+        if self.board.isGameOver():
+            self.__printWinner(bot, update)
+            self.__tryAgainCheck(bot, update)
+        else:
+            self.__play(bot, update)
+
+
+    def __printWinner(self, bot, update):
         winner = self.board.getWinner()
         if winner == Board.State.Blank:
-            print("Draw")
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text="Draw"
+            )
         else:
-            print(str(winner.name) + " win!")
-    
-    def __tryAgain(self):
-        if self.__tryAgainCheck():
-            print("You will play as X or O?\ntype X or O")
-            self.wish = input().upper()
-            if self.wish in ("X", "O"):
-                print("Select level.\nEasy - 1\nMedium -2\nHard - 3\ntype 1 or 2 or 3.")
-                self.difficulty = input()
-                if self.difficulty =="1":
-                    self.difficulty=1
-                if self.difficulty =="2":
-                    self.difficulty=3
-                if self.difficulty =="3":
-                    self.difficulty=9
-                else:    
-                    self.difficulty = 3
-                self.board.reset()
-                return True
+            if winner.name == self.wish:
+                bot.sendMessage(
+                    chat_id=update.message.chat.id,
+                    text="Well, you win!"
+                )
             else:
-                print("Invalid input.\nYou will play as X.")
-                self.wish="X"
-                self.difficulty = 3
-                self.board.reset()
-                return True
-        return False  
+                bot.sendMessage(
+                    chat_id=update.message.chat.id,
+                    text="Ha-ha! I win!"
+                )
 
-    def __tryAgainCheck(self):
-        while True:
-            print("Try again? y/n")
-            answer = input().lower()
-            if answer == "y":
-                return True
-            if answer == "n":
-                return False
-            print("Invalid input.")
-            
-        
-game = Game()
-game.play()    
+
+    def __tryAgainCheck(self, bot, update):
+        choice = rkm([['Yes!'], ['No']])
+        bot.sendMessage(
+            chat_id=update.message.chat.id,
+            text="Will play again?",
+            reply_markup=choice
+        )
