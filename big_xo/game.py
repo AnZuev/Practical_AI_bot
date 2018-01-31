@@ -3,13 +3,27 @@ from Big_xo.libs import *
 
 class Board:
     def __init__(self, board_size):
-        self.board = np.zeros((board_size, board_size))
+        self.board = np.zeros((board_size, board_size), dtype=int)
 
     def update(self, player, cell):
         if self.board[cell[0]][cell[1]] == 0:
             self.board[cell[0]][cell[1]] = player
             return True
         return False
+
+    def print_board(self):
+        result = '__'
+        line = 0
+        for i in range(len(self.board)):
+            result += str(i+1) + '_'
+        result += '\n'
+        for innerlist in self.board:
+            line += 1
+            result += str(line) + '|'
+            for item in innerlist:
+                result += str(item) + '  '
+            result += '\n'
+        return result
 
 
 
@@ -32,7 +46,7 @@ class BigGame:
         self.players[str(self.current_player)].up(bot, update)
         bot.sendMessage(
             chat_id=update.message.chat.id,
-            text=self.board.board
+            text=self.board.print_board()
         )
 
     def make_a_move(self, player, cell, bot, update):
