@@ -17,8 +17,7 @@ users = {}
 def start(bot, update):
     global users
     users[update.message.from_user.id] = {}
-    users[update.message.from_user.id]['matches'] = Matches()
-    users[update.message.from_user.id]['TTT'] = Game()
+
     bot.sendMessage(
         chat_id=update.message.chat.id,
         text='Hi, {}!\nI\'m glad to see you here.\nPlease, choose what you want to open.'.format(update.message.from_user.first_name),
@@ -79,6 +78,7 @@ def handle_search(bot, update):
 
 def handle_matches(bot, update):
     global users
+    users[update.message.from_user.id]['matches'] = Matches()
     bot.sendMessage(
         chat_id=update.message.chat.id,
         text="Do you want to play first?",
@@ -88,14 +88,16 @@ def handle_matches(bot, update):
 
 def handle_tic_tac_toe(bot, update):
     global users
+    users[update.message.from_user.id]['TTT'] = Game()
     users[update.message.from_user.id]['TTT'].start(bot, update)
 
 
 def handle_XO5(bot, update):
     ai = AI("AI Player")
     human = Player("Human Player")
-    g = BigGame(human, ai, bot, update, 10)
 
+    global users
+    users[update.message.from_user.id]['BigGame'] = BigGame(human, ai, bot, update, 10)
 
 
 # Filters for button messages handling
@@ -164,6 +166,14 @@ class MatchesStartAgainFilter(filters.BaseFilter):
             return False
 
 
+class BigGameInputFilter(filters.BaseFilter):
+    def filter(self, message):
+        if len(message.text) == 2 and message.text[0] in '123456789' and message.text[1] in '123456789':
+            return True
+        else:
+            return False
+
+
 def difficulty(bot, update):
     global users
     users[update.message.from_user.id]['TTT'].difficulty(bot, update)
@@ -180,13 +190,14 @@ def matches_choice(bot, update):
     global users
     users[update.message.from_user.id]['matches'].matches_choice(bot, update)
 
+def bigGame_choice(bot, update):
+    users[update.message.from_user.id]['BigGame'].start(bot, update)
 
 
 
 def main():
     """Run bot."""
-    #updater = Updater("496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg")
-    updater = Updater("337683580:AAGYNf_8C6Etcf-6uH0xqnd2DVMuguSgk6o")
+    updater = Updater("496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -222,6 +233,11 @@ def main():
 
     again_filter_instance = StartAgainFilter()
     dp.add_handler(MessageHandler(again_filter_instance, handle_tic_tac_toe))
+
+
+    # 5 in-a-row handler
+    game_filter_instance = BigGameInputFilter()
+    dp.add_handler(MessageHandler(game_filter_instance, bigGame_choice))
 
 
     # WolframAlpha handler

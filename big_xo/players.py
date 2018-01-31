@@ -13,12 +13,8 @@ class Player:
     def set_game(self, game):
         self.game = game
 
-    def up(self, bot, update):
-        bot.sendMessage(
-            chat_id=update.message.chat.id,
-            text="It is time to move, {}".format(self.name)
-        )
-        # something happened
+    def up(self, bot, update, cell):
+        self.move(cell)
 
     def move(self, cell):
         self.game.make_a_move(self.player_type, cell)
@@ -34,15 +30,15 @@ class AI:
     def set_game(self, game):
         self.game = game
 
-    def up(self, bot, update):
+    def up(self, bot, update, cell):
         bot.sendMessage(
             chat_id=update.message.chat.id,
             text="{} has started thinking, wait for a couple of years, please.".format(self.name)
         )
-        self.think()
+        self.think(bot, update)
 
     def think(self, bot, update):
-        my_scores, opponent_scores = score_game(g.board.board, self.player_type)
+        my_scores, opponent_scores = score_game(self.game.board.board, self.player_type)
         my_total_score, opponent_total_score, difference = get_total_scores(my_scores, opponent_scores)
 
         my_wi = get_max_element_index_from_2d_matrix(my_scores)
