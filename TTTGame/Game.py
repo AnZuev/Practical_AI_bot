@@ -46,7 +46,7 @@ class Game:
 
     def __play(self, bot, update):
         if self.board.getTurn().value == self.wish:
-            choice = rkm([['"1"', '"2"', '"3"'], ['"4"', '"5"', '"6"'], ['"7"', '"8"', '"9"']])
+            choice = rkm([['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']])
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text="Your turn :)",
@@ -75,7 +75,7 @@ class Game:
 
 
     def getPlayerMove(self, bot, update):
-        val = int(update.message.text[1]) - 1
+        val = int(update.message.text) - 1
         if not self.board.move(val):
             bot.sendMessage(
                 chat_id=update.message.chat.id,

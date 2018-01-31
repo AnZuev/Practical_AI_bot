@@ -1,12 +1,12 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 from telegram import ReplyKeyboardMarkup as rkm
 from WolframAlpha_api.AI_bot_search import ask
 from TTTGame.Game import Game
+from Matches.Matches import Matches
 
 
-main_menu = rkm([['Search'], ['Matches'], ['Tic tac toe'], ['XO 5 in a row']], one_time_keyboard=True)
+main_menu = rkm([['WolframAlpha search'], ['Matches'], ['Tic tac toe'], ['XO 5 in a row']], one_time_keyboard=True)
 show_menu = rkm([['Choose another activity']])
-game = Game()
 
 
 def start(bot, update):
@@ -25,17 +25,22 @@ def handle_choice(bot, update):
             text='Please, choose what you want to open.',
             reply_markup=main_menu
         )
-    elif mes == 'Search':
+
+    elif mes == 'WolframAlpha search':
         bot.sendMessage(
             chat_id=update.message.chat.id,
             text='Nice!\nI can send a query to WolframAlpha search system for you.\nEnter some query below'
         )
+
     elif mes == 'Matches':
-        handle_matches
+        handle_matches(bot, update)
+
     elif mes == 'Tic tac toe':
         handle_tic_tac_toe(bot, update)
+
     elif mes == 'XO 5 in a row':
         handle_XO5
+
     else:
         bot.sendMessage(
             chat_id=update.message.chat.id,
@@ -49,6 +54,7 @@ def handle_search(bot, update):
         chat_id=update.message.chat.id,
         action='typing'
     )
+
     subpods = ask(update.message.text)
     for pod in subpods:
         bot.sendMessage(
@@ -62,8 +68,15 @@ def handle_search(bot, update):
     )
 
 
-def handle_matches():
-    pass
+def handle_matches(bot, update):
+    global matches
+    matches = Matches()
+
+    bot.sendMessage(
+        chat_id=update.message.chat.id,
+        text="Do you want to play first?",
+        reply_markup=matches.start_choice
+    )
 
 
 def handle_tic_tac_toe(bot, update):
@@ -81,7 +94,7 @@ def handle_XO5():
 
 class MenuFilter(filters.BaseFilter):
     def filter(self, message):
-        if message.text == 'Search' or message.text == 'Matches' or message.text == 'Tic tac toe' or message.text == 'XO 5 in a row' or message.text == 'Choose another activity' or message.text == 'No':
+        if message.text == 'Search' or message.text == 'Matches' or message.text == 'Tic tac toe' or message.text == 'XO 5 in a row' or message.text == 'Choose another activity' or message.text == 'No' or message.text == 'Enough':
             return True
         else:
             return False
@@ -103,9 +116,25 @@ class OrderFilter(filters.BaseFilter):
             return False
 
 
+class MatchesOrderFilter(filters.BaseFilter):
+    def filter(self, message):
+        if message.text == 'Yes, I start' or message.text == 'After you':
+            return True
+        else:
+            return False
+
+
 class MoveFilter(filters.BaseFilter):
     def filter(self, message):
-        if len(message.text) == 3 and message.text[1] in "123456789":
+        if message.text in "123456789":
+            return True
+        else:
+            return False
+
+
+class MatchesMoveFilter(filters.BaseFilter):
+    def filter(self, message):
+        if message.text == '1 match' or message.text == '2 matches' or message.text == '3 matches':
             return True
         else:
             return False
@@ -114,6 +143,14 @@ class MoveFilter(filters.BaseFilter):
 class StartAgainFilter(filters.BaseFilter):
     def filter(self, message):
         if message.text == 'Yes!':
+            return True
+        else:
+            return False
+
+
+class MatchesStartAgainFilter(filters.BaseFilter):
+    def filter(self, message):
+        if message.text == 'One more time!':
             return True
         else:
             return False
@@ -128,9 +165,16 @@ def order(bot, update):
 def getPlayerMove(bot, update):
     game.getPlayerMove(bot, update)
 
+def matches_choice(bot, update):
+    matches.matches_choice(bot, update)
+
+
+
+
 def main():
     """Run bot."""
-    updater = Updater("496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg")
+    #updater = Updater("496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg")
+    updater = Updater("337683580:AAGYNf_8C6Etcf-6uH0xqnd2DVMuguSgk6o")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -138,9 +182,26 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
 
+    game = Game()   # for Tic Tac Toe game
+    matches = Matches()
+
+
     menu_filter_instance = MenuFilter()
     dp.add_handler(MessageHandler(menu_filter_instance, handle_choice))
 
+
+    # Matches handler
+    m_order_filter_instance = MatchesOrderFilter()
+    dp.add_handler(MessageHandler(m_order_filter_instance, matches_choice))
+
+    m_move_filter_instance = MatchesMoveFilter()
+    dp.add_handler(MessageHandler(m_move_filter_instance, matches_choice))
+
+    m_again_filter_instance = MatchesStartAgainFilter()
+    dp.add_handler(MessageHandler(m_again_filter_instance, handle_matches))
+
+
+    # Tic tac toe handlers
     diff_filter_instance = DifficultyFilter()
     dp.add_handler(MessageHandler(diff_filter_instance, difficulty))
 
@@ -153,7 +214,10 @@ def main():
     again_filter_instance = StartAgainFilter()
     dp.add_handler(MessageHandler(again_filter_instance, handle_tic_tac_toe))
 
+
+    # WolframAlpha handler
     dp.add_handler(MessageHandler(filters.Filters.text, handle_search))
+
 
     # Start the Bot
     updater.start_polling()
