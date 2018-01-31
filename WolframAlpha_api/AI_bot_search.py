@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import urllib
 
 APP_NAME = "Easy Solver"
 APPID = "3ULTAE-HA496WGW72"
