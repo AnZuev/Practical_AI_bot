@@ -71,10 +71,10 @@ class AI:
         _, _, diff2 = get_total_scores(*score_game(t_board, self.player_type))
         t_board[opponent_best[0]] = 0
 
-        if diff2 > diff1:
-            final_move = opponent_best[0]
+        if diff2 >= diff1:
+            final_move = opponent_best[0][0] + opponent_wi[0], opponent_best[0][1] + opponent_wi[1]
         else:
-            final_move = my_best[0]
+            final_move = my_best[0][0] + my_wi[0], my_best[0][1] + my_wi[1]
 
         self.bot.sendMessage(
             chat_id=self.chat_id,
