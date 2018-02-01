@@ -14,6 +14,7 @@ show_menu = rkm([['Choose another activity']])
 users = {}
 
 
+
 def start(bot, update):
     global users
     users[update.message.from_user.id] = {}
@@ -93,11 +94,14 @@ def handle_tic_tac_toe(bot, update):
 
 
 def handle_XO5(bot, update):
-    ai = AI("AI Player")
-    human = Player("Human Player")
+    print(update.message.chat.id)
+    ai = AI(bot, update.message.chat.id, "AI Player")
+    human = Player(bot, update.message.chat.id, update.message.from_user.first_name)
 
     global users
-    users[update.message.from_user.id]['BigGame'] = BigGame(human, ai, bot, update, 10)
+    g = BigGame(human, ai, bot, update.message.chat.id, 10)
+    users[update.message.from_user.id]['BigGame'] = (g, human)
+    g.start()
 
 
 # Filters for button messages handling
@@ -168,7 +172,10 @@ class MatchesStartAgainFilter(filters.BaseFilter):
 
 class BigGameInputFilter(filters.BaseFilter):
     def filter(self, message):
-        if len(message.text) == 2 and message.text[0] in '123456789' and message.text[1] in '123456789':
+        poss_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        parts = message.text.split(' ')
+        print(parts)
+        if len(parts) == 2 and int(parts[0]) in poss_moves and int(parts[1]) in poss_moves:
             return True
         else:
             return False
@@ -178,21 +185,29 @@ def difficulty(bot, update):
     global users
     users[update.message.from_user.id]['TTT'].difficulty(bot, update)
 
+
 def order(bot, update):
     global users
     users[update.message.from_user.id]['TTT'].order(bot, update)
+
 
 def getPlayerMove(bot, update):
     global users
     users[update.message.from_user.id]['TTT'].getPlayerMove(bot, update)
 
+
 def matches_choice(bot, update):
     global users
     users[update.message.from_user.id]['matches'].matches_choice(bot, update)
 
-def bigGame_choice(bot, update):
-    users[update.message.from_user.id]['BigGame'].start(bot, update)
 
+def make_move_big_game(bot, update):
+    print("Making move for big game")
+    global users
+    cell = tuple([int(x) for x in update.message.text.split(" ")])
+    print(cell)
+    users[update.message.from_user.id]['BigGame'][1].move((cell[0] -1, cell[1] - 1))
+    # users[update.message.from_user.id]['BigGame'] = (BigGame(human, ai, bot, update.message.chat.id, 10), human)
 
 
 def main():
@@ -237,7 +252,7 @@ def main():
 
     # 5 in-a-row handler
     game_filter_instance = BigGameInputFilter()
-    dp.add_handler(MessageHandler(game_filter_instance, bigGame_choice))
+    dp.add_handler(MessageHandler(game_filter_instance, make_move_big_game))
 
 
     # WolframAlpha handler

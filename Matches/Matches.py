@@ -16,7 +16,6 @@ class Matches(object):
         self.again_choice = rkm([['One more time!'], ['Enough']])
         self.three_choice = rkm([['1 match'], ['2 matches'], ['3 matches']])
 
-
     def matches_choice(self, bot, update):
         if update.message.text == 'Yes, I start':
             msg = bot.sendMessage(

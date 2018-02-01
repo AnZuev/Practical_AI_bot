@@ -5,14 +5,9 @@ class Board:
     def __init__(self, board_size):
         self.board = np.zeros((board_size, board_size), dtype=int)
 
-    def update(self, player, cell, bot, update):
-        if self.board[int(cell[0])][int(cell[1])] == 0:
-
+    def update(self, player, cell):
+        if self.board[cell[0]][cell[1]] == 0:
             self.board[int(cell[0])][int(cell[1])] = player
-            bot.sendMessage(
-                chat_id=update.message.chat.id,
-                text=self.print_board()
-            )
             return True
         return False
 
@@ -25,16 +20,18 @@ class Board:
         for innerlist in self.board:
             line += 1
             result += str(line) + '|'
-            for item in innerlist:
+            for item in map(lambda x: 'x' if x == 1 else 'o' if x == -1 else '_', innerlist):
                 result += str(item) + '  '
             result += '\n'
         return result
 
 
-
 class BigGame:
-    def __init__(self, player1, player2, bot, update, board_size = 100):
+    def __init__(self, player1, player2, bot, chat_id, board_size=100):
         self.board = Board(board_size)
+        self.bot = bot
+        self.chat_id = chat_id
+
         self.players = dict({
             '1': player1,
             '-1': player2
@@ -46,47 +43,46 @@ class BigGame:
 
         self.finished = False
         self.winner = None
+        self.current_player = self.current_player = PLAYER_TYPE['x']
 
-        bot.sendMessage(
-            chat_id=update.message.chat.id,
-            text=self.board.print_board() + '\nPlease, enter cell coordinate in format xy:'
+    def start(self):
+        self.bot.sendMessage(
+            chat_id=self.chat_id,
+            text="Game started.\n{}".format(self.board.print_board())
         )
 
-    def start(self, bot, update):
-        self.current_player = PLAYER_TYPE['x']
-        self.players[str(self.current_player)].up(bot, update, update.message.text)
+        self.players[str(self.current_player)].up()
 
-    def make_a_move(self, player, cell, bot, update):
+    def make_a_move(self, player, cell):
+        print("Big game: making move")
         if self.finished:
-            bot.sendMessage(
-                chat_id=update.message.chat.id,
+            self.bot.sendMessage(
+                chat_id=self.chat_id,
                 text="Game is already finished, winner is {}".format(self.winner.name)
             )
             return
         if player != self.current_player:
-            bot.sendMessage(
-                chat_id=update.message.chat.id,
+            self.bot.sendMessage(
+                chat_id=self.chat_id,
                 text="{} is about to move, not {}".format(self.current_player.name, self.players[str(player)].name)
             )
-        if not self.board.update(player, cell, bot, update):
-            bot.sendMessage(
-                chat_id=update.message.chat.id,
-                text="Move {} is invalid".format(cell)
+        if not self.board.update(player, cell):
+            self.bot.sendMessage(
+                chat_id=self.chat_id,
+                text="Move {} is invalid. Try another one".format((cell[0] + 1, cell[0] + 1))
             )
-            self.players[str(self.current_player)].up(bot, update, cell)
+            self.players[str(self.current_player)].up()
         else:
-            bot.sendMessage(
-                chat_id=update.message.chat.id,
-                text=self.board.print_board()
-            )
+
             self.check_ending()
             # print("\n")
             self.current_player = -1 * self.current_player
             if not self.finished:
-                self.players[str(self.current_player)].up(bot, update, cell)
+                print("Asking another player to move")
+                self.players[str(self.current_player)].up()
             else:
-                bot.sendMessage(
-                    chat_id=update.message.chat.id,
+                self.bot.sendMessage(
+                    chat_id=self.chat_id,
                     text="Game is finished. {} won".format(self.winner.name)
                 )
 

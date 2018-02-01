@@ -2,10 +2,12 @@ from Big_xo.libs import *
 
 
 class Player:
-    def __init__(self, name='Human'):
+    def __init__(self, bot, chat_id, name='Human'):
         self.name = name
         self.player_type = None
         self.game = None
+        self.bot = bot
+        self.chat_id = chat_id
 
     def set_type(self, player_type):
         self.player_type = player_type
@@ -13,16 +15,26 @@ class Player:
     def set_game(self, game):
         self.game = game
 
-    def up(self, bot, update, cell):
-        self.move(cell)
+    def up(self):
+        print("HumanPlayer: up()")
+        print(self.chat_id)
+        print(self.bot)
+        self.bot.sendMessage(
+            chat_id=self.chat_id,
+            text="Your turn\n{}".format(self.game.board.print_board())
+        )
 
     def move(self, cell):
         self.game.make_a_move(self.player_type, cell)
 
 
 class AI:
-    def __init__(self, name="AI"):
+    def __init__(self, bot, chat_id, name="AI"):
         self.name = name
+        self.player_type = None
+        self.game = None
+        self.bot = bot
+        self.chat_id = chat_id
 
     def set_type(self, player_type):
         self.player_type = player_type
@@ -30,16 +42,15 @@ class AI:
     def set_game(self, game):
         self.game = game
 
-    def up(self, bot, update, cell):
-        bot.sendMessage(
-            chat_id=update.message.chat.id,
+    def up(self):
+        self.bot.sendMessage(
+            chat_id=self.chat_id,
             text="{} has started thinking, wait for a couple of years, please.".format(self.name)
         )
-        self.think(bot, update)
+        self.think()
 
-    def think(self, bot, update):
+    def think(self):
         my_scores, opponent_scores = score_game(self.game.board.board, self.player_type)
-        my_total_score, opponent_total_score, difference = get_total_scores(my_scores, opponent_scores)
 
         my_wi = get_max_element_index_from_2d_matrix(my_scores)
         opponent_wi = get_max_element_index_from_2d_matrix(opponent_scores)
@@ -65,9 +76,9 @@ class AI:
         else:
             final_move = my_best[0]
 
-        bot.sendMessage(
-            chat_id=update.message.chat.id,
-            text="{}: my move is {}".format(self.name, final_move)
+        self.bot.sendMessage(
+            chat_id=self.chat_id,
+            text="{}: my move is {}".format(self.name, (final_move[0] + 1, final_move[1] + 1))
         )
         self.move(final_move)
 
