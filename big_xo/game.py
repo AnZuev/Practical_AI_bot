@@ -1,4 +1,4 @@
-from Big_xo.libs import *
+from big_xo.libs import *
 
 
 class Board:
@@ -26,7 +26,7 @@ class Board:
         return result
 
 
-class BigGame:
+class Game:
     def __init__(self, player1, player2, bot, chat_id, board_size=100):
         self.board = Board(board_size)
         self.bot = bot

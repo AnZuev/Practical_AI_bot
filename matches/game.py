@@ -8,7 +8,7 @@ from telegram import ReplyKeyboardMarkup as rkm
 # 3. Если бот ходит первый, то вызвать сначала функцию respondMove, далее как в п.2
 # 4. При повторном использовании либо заного создать объект, либо вызвать функцию restart
 
-class Matches(object):
+class Game(object):
 
     def __init__(self):
         self.currentNumber = 21
@@ -24,23 +24,21 @@ class Matches(object):
                 reply_markup=self.three_choice
             )
         elif update.message.text == 'After you':
-            self.respondMove(bot, update)
+            self.respond_move(bot, update)
         else:
-            self.makeMove(update.message.text[0], bot, update)
+            self.make_move(update.message.text[0], bot, update)
 
-
-
-    def makeMove(self, move, bot, update):
+    def make_move(self, move, bot, update):
 
         move = int(move)
 
-        if move<1 or move>3:
+        if move < 1 or move > 3:
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text="Wrong move. You can only take 1, 2 or 3 matches"
             )
 
-        elif self.currentNumber-move<0:
+        elif self.currentNumber-move < 0:
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text="Wrong move. Can't take more than there currently are"
@@ -57,11 +55,9 @@ class Matches(object):
 
         else:
             self.currentNumber -= move
-            return self.respondMove(bot, update)
+            return self.respond_move(bot, update)
 
-
-
-    def respondMove(self, bot, update):
+    def respond_move(self, bot, update):
 
         if self.currentNumber == 1:
             bot.sendMessage(
@@ -70,24 +66,23 @@ class Matches(object):
                 reply_markup=self.again_choice
             )
         else:
-            rem = (self.currentNumber-1)%4
+            rem = (self.currentNumber-1) % 4
 
             answer = rem
 
-            if rem==0:
-                answer = random.randint(1,3)
+            if rem == 0:
+                answer = random.randint(1, 3)
 
             self.currentNumber -= answer
 
             bot.sendMessage(
                 chat_id=update.message.chat.id,
-                text="I take " + str(answer) + ". Current number of matches: " + str(self.getCurrentNumber()) + "\nYour turn",
+                text="I take {}. Current number of matches: {}\n Your turn".format(str(answer), str(self.get_current_number())),
                 reply_markup=self.three_choice
             )
 
-
-    def getCurrentNumber(self):
+    def get_current_number(self):
         return self.currentNumber
 
-    def maxPossibleMove(self):
+    def max_possible_move(self):
         return min(3, self.currentNumber)
