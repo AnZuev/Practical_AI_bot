@@ -1,4 +1,4 @@
-`from Activity import Activity
+from Activity import Activity
 from TTTGame import Board
 from TTTGame import AlphaBetaPrunning
 from telegram import ReplyKeyboardMarkup as rkm
@@ -90,7 +90,8 @@ class Game(Activity):
     def __status(self, bot, update):
         bot.sendMessage(
             chat_id=update.message.chat.id,
-            text=str(self.board)
+            text="```\n"+str(self.board)+"\n```",
+            parse_mode='Markdown'
         )
 
 
