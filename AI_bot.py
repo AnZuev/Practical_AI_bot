@@ -6,6 +6,7 @@ from Matches.Matches import Matches
 from TTTGame.TTT import Game
 from Big_xo.Big_xo import BigGame
 from WolframAlpha_api.Wolfram import Wolfram
+from Translator.Translator import Translator
 from search_engine.index import SearchEngine
 
 from update2text import update2text
@@ -16,7 +17,7 @@ search_engine = None
 users = {}
 
 
-main_menu = rkm([['tic-tac-toe'], ['5 in a row'], ['matches'], ['wolfram']], one_time_keyboard=True)
+main_menu = rkm([['tic-tac-toe'], ['5 in a row'], ['matches'], ['wolfram'], ['translator']], one_time_keyboard=True)
 
 
 def start(bot, update):
@@ -73,6 +74,10 @@ def handle_message(bot, update):
         elif result == 'wolfram':
             users[update.message.from_user.id]['activity'] = Wolfram()
             show_choice(bot, update, 'WolframAlpha')
+
+        elif result == 'translator':
+            users[update.message.from_user.id]['activity'] = Translator()
+            show_choice(bot, update, 'Translator')
 
         users[update.message.from_user.id]['activity'].first_query(bot, update)
 
