@@ -46,6 +46,9 @@ class BigGame(Activity):
         self.winner = None
         self.current_player = self.current_player = PLAYER_TYPE['x']
 
+    def first_query(self, bot, update):
+        self.start()
+
     def process(self, query, bot, update):
         pass
 

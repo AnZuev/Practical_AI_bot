@@ -6,13 +6,13 @@ from Matches.Matches import Matches
 from TTTGame.TTT import Game
 from Big_xo.Big_xo import BigGame
 from WolframAlpha_api.Wolfram import Wolfram
-from search_engine.index import SearchEngine
+#from search_engine.index import SearchEngine
 
 from update2text import update2text
 
 
 BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
-search_engine = None
+#search_engine = None
 users = {}
 
 
@@ -21,6 +21,8 @@ main_menu = rkm([['tic-tac-toe'], ['5 in a row'], ['matches'], ['wolfram']], one
 
 def start(bot, update):
     global users
+    print("Start for user", str(update.message.from_user.id))
+    users[update.message.from_user.id] = {}
     users[update.message.from_user.id]['activity'] = None
     users[update.message.from_user.id]['text'] = None
 
@@ -45,7 +47,8 @@ def handle_message(bot, update):
     users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en_US")
 
     if users[update.message.from_user.id]['activity'] == None:
-        result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
+#        result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
+        result, similarity = users[update.message.from_user.id]['text'], 1
 
         if similarity<0.5:
             bot.sendMessage(
@@ -57,19 +60,19 @@ def handle_message(bot, update):
 
         elif result == 'tic-tac-toe':
             users[update.message.from_user.id]['activity'] = Game()
-            handle_message(bot, update, 'tic-tac-toe')
+            show_choice(bot, update, 'tic-tac-toe')
 
         elif result == '5 in a row':
             users[update.message.from_user.id]['activity'] = BigGame()
-            handle_message(bot, update, '5 in a row')
+            show_choice(bot, update, '5 in a row')
 
         elif result == 'matches':
             users[update.message.from_user.id]['activity'] = Matches()
-            handle_message(bot, update, 'matches')
+            show_choice(bot, update, 'matches')
 
         elif result == 'wolfram':
             users[update.message.from_user.id]['activity'] = Wolfram()
-            handle_message(bot, update, 'WolframAlpha')
+            show_choice(bot, update, 'WolframAlpha')
 
         users[update.message.from_user.id]['activity'].first_query(bot, update)
 
@@ -83,10 +86,10 @@ def handle_message(bot, update):
 
 # ------------------------ Init stuff --------------------
 
-def init_search_engine():
-    global search_engine
-    facts = ['tic-tac-toe', '5 in a row', 'matches', 'wolfram']
-    search_engine = SearchEngine(facts)
+# def init_search_engine():
+#     global search_engine
+#     facts = ['tic-tac-toe', '5 in a row', 'matches', 'wolfram']
+#     search_engine = SearchEngine(facts)
 
 # --------------------------------------------------
 
@@ -97,9 +100,9 @@ def main():
     updater = Updater(BOT_API_TOKEN)
 
     # loads model to create embeddings
-    SearchEngine.load_model()
+    #SearchEngine.load_model()
     # initing search engine
-    init_search_engine()
+    #init_search_engine()
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -112,6 +115,8 @@ def main():
 
     # Start the Bot
     updater.start_polling()
+
+    print("Bot started")
 
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
     # SIGABRT. This should be used most of the time, since start_polling() is

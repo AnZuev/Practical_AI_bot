@@ -31,7 +31,7 @@ class Matches(Activity):
 
     def matches_choice(self, query, bot, update):
         #if update.message.text == 'Yes, I start':
-        if query is 'Yes, I start':
+        if query == 'Yes, I start':
                 msg = bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text="Choose how many matches to take",

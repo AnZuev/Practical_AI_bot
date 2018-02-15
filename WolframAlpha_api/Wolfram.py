@@ -11,6 +11,13 @@ class Wolfram(Activity):
         self.APPID = "3ULTAE-HA496WGW72"
         self.API = "http://api.wolframalpha.com/v2/query?input={}&appid={}"
 
+    def first_query(self, bot, update):
+        bot.sendMessage(
+            chat_id=update.message.chat.id,
+            text="Ask your question",
+            reply_markup=None
+        )
+
     def process(self, query, bot, update):
         self.ask(query)
 
