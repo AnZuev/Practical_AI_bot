@@ -6,13 +6,13 @@ from Matches.Matches import Matches
 from TTTGame.TTT import Game
 from Big_xo.Big_xo import BigGame
 from WolframAlpha_api.Wolfram import Wolfram
-#from search_engine.index import SearchEngine
+from search_engine.index import SearchEngine
 
 from update2text import update2text
 
 
 BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
-#search_engine = None
+search_engine = None
 users = {}
 
 
@@ -47,8 +47,8 @@ def handle_message(bot, update):
     users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en_US")
 
     if users[update.message.from_user.id]['activity'] == None:
-#        result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
-        result, similarity = users[update.message.from_user.id]['text'], 1
+        result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
+        #result, similarity = users[update.message.from_user.id]['text'], 1
 
         if similarity<0.5:
             bot.sendMessage(
@@ -86,10 +86,10 @@ def handle_message(bot, update):
 
 # ------------------------ Init stuff --------------------
 
-# def init_search_engine():
-#     global search_engine
-#     facts = ['tic-tac-toe', '5 in a row', 'matches', 'wolfram']
-#     search_engine = SearchEngine(facts)
+def init_search_engine():
+    global search_engine
+    facts = ['tic-tac-toe', '5 in a row', 'matches', 'wolfram']
+    search_engine = SearchEngine(facts)
 
 # --------------------------------------------------
 
@@ -100,9 +100,9 @@ def main():
     updater = Updater(BOT_API_TOKEN)
 
     # loads model to create embeddings
-    #SearchEngine.load_model()
+    SearchEngine.load_model()
     # initing search engine
-    #init_search_engine()
+    init_search_engine()
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
