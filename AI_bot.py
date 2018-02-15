@@ -47,7 +47,7 @@ def handle_message(bot, update):
     users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en-US")
 
     if users[update.message.from_user.id]['activity'] == None:
-        result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
+        result, similarity = search_engine.find(users[update.message.from_user.id]['text'].lower())
         #result, similarity = users[update.message.from_user.id]['text'], 1
 
         if similarity<0.5:

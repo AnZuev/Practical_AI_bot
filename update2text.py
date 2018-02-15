@@ -15,9 +15,7 @@ def update2text(update, BOT_API_TOKEN, locale): # locale="ru-RU" or "en-US"
         text=message.text # если в сообщении есть текст, то берём его для начала
 
     if message.voice!=None: # если есть голос, то попробуем его распознать
-        file_info = message.bot.get_file(message.voice.file_id) 
-        #file = requests.get(
-        #    'https://api.telegram.org/file/bot{0}/{1}'.format(BOT_API_TOKEN, file_info.file_path)) # вроде так из телеги файлы выкачиваются
+        file_info = message.bot.get_file(message.voice.file_id)
 
         file = requests.get(file_info.file_path) # вроде точно так из телеги файлы выкачиваются
 
@@ -28,7 +26,6 @@ def update2text(update, BOT_API_TOKEN, locale): # locale="ru-RU" or "en-US"
             mv=max(answer, key=answer.get) # если удалось распознать речь, то берём лучшее совпадение
             text=mv
 
-    text = text.lower()
 
     if len(text)==0:
         text=None # если в сообщении нет текста или не удалось распознать текст.
