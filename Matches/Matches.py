@@ -13,12 +13,12 @@ from Activity import Activity
 class Matches(Activity):
 
     def __init__(self):
-        self.currentNumber = 21
         self.start_choice = rkm([['Yes, I start'], ['After you']])
         self.again_choice = rkm([['One more time!'], ['Exit']])
         self.three_choice = rkm([['1 match'], ['2 matches'], ['3 matches']])
 
     def first_query(self, bot, update):
+        self.currentNumber = 21
         bot.sendMessage(
             chat_id=update.message.chat.id,
             text="Do you want to play first?",
@@ -32,13 +32,15 @@ class Matches(Activity):
     def matches_choice(self, query, bot, update):
         #if update.message.text == 'Yes, I start':
         if query == 'Yes, I start':
-                msg = bot.sendMessage(
+            bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text="Choose how many matches to take",
                 reply_markup=self.three_choice
             )
         elif query == 'After you':
             self.respondMove(bot, update)
+        elif query == 'One more time':
+            self.first_query(bot, update)
         else:
             self.makeMove(query[0], bot, update)
 
