@@ -3,10 +3,11 @@ import locale
 from yandex import Translater
 from update2text import update2text
 from telegram import ReplyKeyboardMarkup as rkm
-from AI_bot import BOT_API_TOKEN
+#from AI_bot import BOT_API_TOKEN
 
 # pip install yandex-translater
 
+BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
 YANDEX_API_KEY="877f02a7-6e01-494e-bb36-b999b189f036"
 
 class Translator(Activity):
@@ -30,6 +31,8 @@ class Translator(Activity):
         )
 
     def process(self, query, bot, update):
+        global BOT_API_TOKEN
+
         result=""
 
         if query=='RU-->EN':
