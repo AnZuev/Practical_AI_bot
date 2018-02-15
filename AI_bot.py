@@ -12,16 +12,18 @@ from update2text import update2text
 
 
 BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
+search_engine = None
+users = {}
 
 
 main_menu = rkm([['tic-tac-toe'], ['5 in a row'], ['matches'], ['wolfram']], one_time_keyboard=True)
 
-activity = None
-# search engine
-search_engine = None
-
 
 def start(bot, update):
+    global users
+    users[update.message.from_user.id]['activity'] = None
+    users[update.message.from_user.id]['text'] = None
+
     bot.sendMessage(
         chat_id=update.message.chat.id,
         text='Hi, {}!\nI\'m glad to see you here.\nPlease, say sending audiomessage or choose below what you want to open.'.format(update.message.from_user.first_name),
@@ -30,17 +32,13 @@ def start(bot, update):
 
 
 def handle_message(bot, update):
-    text = update2text(update, BOT_API_TOKEN, "en_US")
-
     global search_engine
+    global users
 
+    users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en_US")
 
-
-
-    global activity
-
-    if activity == None:
-        result, similarity = search_engine.find(text)
+    if users[update.message.from_user.id]['activity'] == None:
+        result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
 
         if similarity<0.5:
             bot.sendMessage(
@@ -52,40 +50,22 @@ def handle_message(bot, update):
             return
 
         if result == 'tic-tac-toe':
-            activity = Game()
+            users[update.message.from_user.id]['activity'] = Game()
         elif result == '5 in a row':
-            activity = BigGame()
+            users[update.message.from_user.id]['activity'] = BigGame()
         elif result == 'matches':
-            activity = Matches()
+            users[update.message.from_user.id]['activity'] = Matches()
         elif result == 'wolfram':
-            activity = Wolfram()
+            users[update.message.from_user.id]['activity'] = Wolfram()
 
-        activity.first_query(bot, update)
+        users[update.message.from_user.id]['activity'].first_query(bot, update)
 
-
-
-    elif text == 'Exit':  # EXIT sign sent from Game instance:
-        activity = None
+    elif users[update.message.from_user.id]['text'] == 'Exit':
+        users[update.message.from_user.id]['activity'] = None
         start(bot, update)
 
     else:
-        activity.process(text, bot, update)
-        # Game will have user_id field
-
-
-def handle_activity_choosing(text, user_session, bot_wrapper):
-    global search_engine
-
-    result, similarity = search_engine.find(text)
-
-    if similarity < 0.5:
-        # user_session['data']['handler'] = handlers['no_activity_found']
-        return True
-    else:
-        # user_session['data']['handler'] = handlers[result]
-        return True
-
-    return result
+        users[update.message.from_user.id]['activity'].process(users[update.message.from_user.id]['text'], bot, update)
 
 
 # ------------------------ Init stuff --------------------
@@ -101,7 +81,6 @@ def init_search_engine():
 def main():
     """Run bot."""
     global BOT_API_TOKEN
-
     updater = Updater(BOT_API_TOKEN)
 
     # loads model to create embeddings
