@@ -11,6 +11,9 @@ from search_engine.index import SearchEngine
 from update2text import update2text
 
 
+BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
+
+
 main_menu = rkm([['tic-tac-toe'], ['5 in a row'], ['matches'], ['wolfram']], one_time_keyboard=True)
 
 activity = None
@@ -27,7 +30,7 @@ def start(bot, update):
 
 
 def handle_message(bot, update):
-    text = update2text(bot,update)
+    text = update2text(update, BOT_API_TOKEN, "en_US")
 
     global search_engine
 
@@ -97,7 +100,9 @@ def init_search_engine():
 
 def main():
     """Run bot."""
-    updater = Updater("496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg")
+    global BOT_API_TOKEN
+
+    updater = Updater(BOT_API_TOKEN)
 
     # loads model to create embeddings
     #SearchEngine.load_model()
