@@ -31,6 +31,13 @@ def start(bot, update):
     )
 
 
+def show_choice(bot, update, choice):
+    bot.sendMessage(
+        chat_id=update.message.chat.id,
+        text='Ok, {}.\nExecuting {})'.format(update.message.from_user.first_name, choice)
+    )
+
+
 def handle_message(bot, update):
     global search_engine
     global users
@@ -39,25 +46,30 @@ def handle_message(bot, update):
 
     if users[update.message.from_user.id]['activity'] == None:
         result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
-        #result, similarity = users[update.message.from_user.id]['text'], 1
 
         if similarity<0.5:
             bot.sendMessage(
                 chat_id=update.message.chat.id,
-                text='{}!\nPlease, speak slowly and clearly'.format(
+                text='I didn\'t understand you, {}!\nPlease, speak slowly and clearly'.format(
                     update.message.from_user.first_name),
                 reply_markup=main_menu
             )
-            return
 
-        if result == 'tic-tac-toe':
+        elif result == 'tic-tac-toe':
             users[update.message.from_user.id]['activity'] = Game()
+            handle_message(bot, update, 'tic-tac-toe')
+
         elif result == '5 in a row':
             users[update.message.from_user.id]['activity'] = BigGame()
+            handle_message(bot, update, '5 in a row')
+
         elif result == 'matches':
             users[update.message.from_user.id]['activity'] = Matches()
+            handle_message(bot, update, 'matches')
+
         elif result == 'wolfram':
             users[update.message.from_user.id]['activity'] = Wolfram()
+            handle_message(bot, update, 'WolframAlpha')
 
         users[update.message.from_user.id]['activity'].first_query(bot, update)
 
