@@ -12,8 +12,8 @@ YANDEX_API_KEY="877f02a7-6e01-494e-bb36-b999b189f036"
 
 
     def __init__(self):
-        self.translator = Translater()
-		self.translator.set_key(api_key)
+		self.translator = Translater()
+		self.translator.set_key(YANDEX_API_KEY)
 		self.mode='EN-->RU'
 
     def first_query(self, bot, update):
