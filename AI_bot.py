@@ -6,6 +6,7 @@ from Matches import Matches
 from TTTGame import TTT
 from Big_xo import Big_xo
 from WolframAlpha_api import Wolfram
+from search_engine.index import SearchEngine
 
 from update2text import update2text
 
@@ -13,6 +14,8 @@ from update2text import update2text
 main_menu = rkm([['WolframAlpha search'], ['Matches'], ['Tic tac toe'], ['XO 5 in a row']], one_time_keyboard=True)
 
 activity = None
+# search engine
+search_engine = None
 
 
 def start(bot, update):
@@ -43,9 +46,24 @@ def handle_message(bot, update):
         # Game will have user_id field
 
 
+# ------------------------ Init stuff --------------------
+
+def init_search_engine():
+    global search_engine
+    facts = ['tic-tac-toe', '5 in a row', 'matches', 'wolfram']
+    search_engine = SearchEngine(facts)
+
+# --------------------------------------------------
+
+
 def main():
     """Run bot."""
     updater = Updater("496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg")
+
+    # loads model to create embeddings
+    #SearchEngine.load_model()
+    # initing search engine
+    #init_search_engine()
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -55,7 +73,6 @@ def main():
 
     # handle all messages
     dp.add_handler(MessageHandler(Filters.all, handle_message))
-
 
     # Start the Bot
     updater.start_polling()
