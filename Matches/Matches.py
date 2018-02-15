@@ -25,12 +25,12 @@ class Matches(Activity):
             reply_markup=self.start_choice
         )
 
+
     def process(self, query, bot, update):
         self.matches_choice(query, bot, update)
-        #pass
+
 
     def matches_choice(self, query, bot, update):
-        #if update.message.text == 'Yes, I start':
         if query == 'Yes, I start':
             bot.sendMessage(
                 chat_id=update.message.chat.id,
@@ -39,7 +39,7 @@ class Matches(Activity):
             )
         elif query == 'After you':
             self.respondMove(bot, update)
-        elif query == 'One more time':
+        elif query == 'One more time!':
             self.first_query(bot, update)
         else:
             self.makeMove(query[0], bot, update)

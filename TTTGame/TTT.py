@@ -1,4 +1,4 @@
-from Activity import Activity
+`from Activity import Activity
 from TTTGame import Board
 from TTTGame import AlphaBetaPrunning
 from telegram import ReplyKeyboardMarkup as rkm
@@ -7,14 +7,27 @@ from telegram import ReplyKeyboardMarkup as rkm
 class Game(Activity):
 
     def __init__(self):
+        self.difficulty = None
+        self.wish = None
         self.board = Board.Board()
         self.abp = AlphaBetaPrunning.AlphaBetaPrunning()
 
     def first_query(self, bot, update):
+        self.__init__()
         self.start(bot, update)
 
     def process(self, query, bot, update):
-        pass
+        if query == 'Yes!':
+            self.first_query(bot, update)
+
+        elif self.difficulty == None:
+            self.set_difficulty(query, bot, update)
+
+        elif self.wish == None:
+            self.order(query, bot, update)
+
+        else:
+            self.getPlayerMove(query, bot, update)
 
 
     def start(self, bot, update):
@@ -26,24 +39,24 @@ class Game(Activity):
         )
 
 
-    def difficulty(self, bot, update):
-        if update.message.text =="Easy":
+    def set_difficulty(self, query, bot, update):
+        if query =="Easy":
             self.difficulty=1
-        if update.message.text =="Medium":
+        if query =="Medium":
             self.difficulty=3
-        if update.message.text =="Hard":
+        if query =="Hard":
             self.difficulty=9
 
         choice = rkm([['Sure!'], ['No, thanks']])
         bot.sendMessage(
             chat_id=update.message.chat.id,
-            text="Ok, " + update.message.text + "\nDo you want to play first?",
+            text="Ok, " + query + "\nDo you want to play first?",
             reply_markup=choice
         )
 
 
-    def order(self, bot, update):
-        if update.message.text == 'No, thanks':
+    def order(self, query, bot, update):
+        if query == 'No, thanks':
             self.wish="O"
         else:
             self.wish="X"
@@ -81,15 +94,17 @@ class Game(Activity):
         )
 
 
-    def getPlayerMove(self, bot, update):
-        val = int(update.message.text) - 1
+    def getPlayerMove(self, query, bot, update):
+        val = int(query) - 1
         if not self.board.move(val):
             bot.sendMessage(
                 chat_id=update.message.chat.id,
-                text="The selected index must be blank, this one is already Occupied."
+                text="The selected index must be blank, this one is already occupied."
             )
+
         if self.board.getTurn().value == self.wish:
             self.__status(bot, update)
+
         if self.board.isGameOver():
             self.__printWinner(bot, update)
             self.__tryAgainCheck(bot, update)
@@ -118,7 +133,7 @@ class Game(Activity):
 
 
     def __tryAgainCheck(self, bot, update):
-        choice = rkm([['Yes!'], ['No']])
+        choice = rkm([['Yes!'], ['Exit']])
         bot.sendMessage(
             chat_id=update.message.chat.id,
             text="Will play again?",
