@@ -3,10 +3,10 @@ import uuid
 from bs4 import BeautifulSoup
 
 
-YANDEX_API_KEY="key" # put your key here
+YANDEX_API_KEY="877f02a7-6e01-494e-bb36-b999b189f036" # put your key here
 
 
-def update2text(update, BOT_API_TOKEN, locale): # locale="ru_RU" or "en_US"
+def update2text(update, locale): # locale="ru_RU" or "en_US"
     message=update.message
 
     text=message.bot.get_file(message.text) # если в сообщении есть текст, то берём его для начала
