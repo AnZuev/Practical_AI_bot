@@ -39,6 +39,7 @@ def handle_message(bot, update):
 
     if users[update.message.from_user.id]['activity'] == None:
         result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
+        #result, similarity = users[update.message.from_user.id]['text'], 1
 
         if similarity<0.5:
             bot.sendMessage(
