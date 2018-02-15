@@ -54,7 +54,7 @@ def handle_message(bot, update):
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text='I didn\'t understand you, {}!\nPlease, speak slowly and clearly. What did you want to say with this: \'{}\''.format(
-                    update.message.from_user.first_name, result),
+                    update.message.from_user.first_name, users[update.message.from_user.id]['text']),
                 reply_markup=main_menu
             )
 
