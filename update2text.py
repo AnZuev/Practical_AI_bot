@@ -9,10 +9,10 @@ YANDEX_API_KEY="key" # put your key here
 def update2text(update, locale): # locale="ru_RU" or "en_US"
     message=update.message
 
-    text=bot.get_file(message.text) # если в сообщении есть текст, то берём его для начала
+    text=message.bot.get_file(message.text) # если в сообщении есть текст, то берём его для начала
 
     if message.voice!=None: # если есть голос, то попробуем его распознать
-        file_info = bot.get_file(message.voice.file_id) 
+        file_info = message.bot.get_file(message.voice.file_id) 
         file = requests.get(
             'https://api.telegram.org/file/bot{0}/{1}'.format(BOT_API_TOKEN, file_info.file_path)) # вроде так из телеги файлы выкачиваются
         
