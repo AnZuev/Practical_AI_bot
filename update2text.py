@@ -6,15 +6,15 @@ from bs4 import BeautifulSoup
 YANDEX_API_KEY="key" # put your key here
 
 
-def update2text(update):
+def update2text(bot, update):
     message=update.message
 
     text=bot.get_file(message.text) # если в сообщении есть текст, то берём его для начала
 
-    if message.voice!=null: # если есть голос, то попробуем его распознать
+    if message.voice is not None: # если есть голос, то попробуем его распознать
         file_info = bot.get_file(message.voice.file_id) 
         file = requests.get(
-            'https://api.telegram.org/file/bot{0}/{1}'.format(API_TOKEN, file_info.file_path)) # вроде так из телеги файлы выкачиваются
+            'https://api.telegram.org/file/bot{0}/{1}'.format(YANDEX_API_KEY, file_info.file_path)) # вроде так из телеги файлы выкачиваются
         
         UUID = str(uuid.uuid4()).replace("-", "")
         answer = speech_2_text(file.content, UUID) # пробуем распознать

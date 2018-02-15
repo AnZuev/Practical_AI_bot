@@ -1,3 +1,4 @@
+from Activity import Activity
 from Big_xo.libs import *
 
 
@@ -26,7 +27,7 @@ class Board:
         return result
 
 
-class BigGame:
+class BigGame(Activity):
     def __init__(self, player1, player2, bot, chat_id, board_size=100):
         self.board = Board(board_size)
         self.bot = bot
@@ -44,6 +45,9 @@ class BigGame:
         self.finished = False
         self.winner = None
         self.current_player = self.current_player = PLAYER_TYPE['x']
+
+    def process(self, query):
+        pass
 
     def start(self):
         self.bot.sendMessage(

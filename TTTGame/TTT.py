@@ -1,13 +1,17 @@
+from Activity import Activity
 from TTTGame import Board
 from TTTGame import AlphaBetaPrunning
 from telegram import ReplyKeyboardMarkup as rkm
 
 
-class Game:
+class Game(Activity):
 
     def __init__(self):
         self.board = Board.Board()
         self.abp = AlphaBetaPrunning.AlphaBetaPrunning()
+
+    def process(self, query):
+        pass
 
 
     def start(self, bot, update):

@@ -7,10 +7,12 @@ from TTTGame import TTT
 from Big_xo import Big_xo
 from WolframAlpha_api import Wolfram
 
+from update2text import update2text
+
 
 main_menu = rkm([['WolframAlpha search'], ['Matches'], ['Tic tac toe'], ['XO 5 in a row']], one_time_keyboard=True)
 
-Game = None
+activity = None
 
 
 def start(bot, update):
@@ -22,21 +24,22 @@ def start(bot, update):
 
 
 def handle_message(bot, update):
-    # TODO:  f(update) -> text
+    text = update2text(bot,update)
 
 
-    global Game
+    global activity
 
-    if Game == None:
+    if activity == None:
+        
         pass # TODO: f(text) -> choose game (globalHandler)
              # Game =
 
     elif text == 'Exit':  # EXIT sign sent from Game instance:
-        Game = None
+        activity = None
         start(bot, update)
 
     else:
-        Game.process(bot, update, text)
+        activity.process(bot, update, text)
         # Game will have user_id field
 
 
