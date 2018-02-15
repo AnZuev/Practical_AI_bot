@@ -191,9 +191,9 @@ def main():
     updater = Updater(token)
 
     # loads model to create embeddings
-    #SearchEngine.load_model()
+    SearchEngine.load_model()
 
-    #init_search_engine()
+    init_search_engine()
     init_handlers()
 
     # Get the dispatcher to register handlers
