@@ -46,6 +46,19 @@ def handle_message(bot, update):
         # Game will have user_id field
 
 
+def handle_activity_choosing(text, user_session, bot_wrapper):
+    global search_engine
+
+    result, similarity = search_engine.find(text)
+
+    if similarity < 0.5:
+        # user_session['data']['handler'] = handlers['no_activity_found']
+        return True
+    else:
+        # user_session['data']['handler'] = handlers[result]
+        return True
+
+
 # ------------------------ Init stuff --------------------
 
 def init_search_engine():
