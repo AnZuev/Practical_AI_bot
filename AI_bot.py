@@ -2,10 +2,10 @@ from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from telegram import ReplyKeyboardMarkup as rkm
 
-from Matches import Matches
-from TTTGame import TTT
-from Big_xo import Big_xo
-from WolframAlpha_api import Wolfram
+from Matches.Matches import Matches
+from TTTGame.TTT import Game
+from Big_xo.Big_xo import BigGame
+from WolframAlpha_api.Wolfram import Wolfram
 from search_engine.index import SearchEngine
 
 from update2text import update2text
@@ -52,9 +52,9 @@ def handle_message(bot, update):
             return
 
         if result == 'tic-tac-toe':
-            activity = TTT()
+            activity = Game()
         elif result == '5 in a row':
-            activity = Big_xo()
+            activity = BigGame()
         elif result == 'matches':
             activity = Matches()
         elif result == 'wolfram':
