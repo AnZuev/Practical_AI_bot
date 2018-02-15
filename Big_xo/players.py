@@ -21,7 +21,8 @@ class Player:
         print(self.bot)
         self.bot.sendMessage(
             chat_id=self.chat_id,
-            text="Your turn\n{}".format(self.game.board.print_board())
+            text="Your turn\n{}".format(self.game.board.print_board()),
+            parse_mode='Markdown'
         )
 
     def move(self, cell):

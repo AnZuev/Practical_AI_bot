@@ -63,7 +63,7 @@ def handle_message(bot, update):
             show_choice(bot, update, 'tic-tac-toe')
 
         elif result == '5 in a row':
-            users[update.message.from_user.id]['activity'] = BigGame()
+            users[update.message.from_user.id]['activity'] = BigGame(bot, update.message, 10)
             show_choice(bot, update, '5 in a row')
 
         elif result == 'matches':

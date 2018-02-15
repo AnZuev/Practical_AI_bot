@@ -1,5 +1,7 @@
 from Activity import Activity
 from Big_xo.libs import *
+from Big_xo.players import *
+from telegram import ReplyKeyboardMarkup as rkm
 
 
 class Board:
@@ -13,25 +15,33 @@ class Board:
         return False
 
     def print_board(self):
-        result = '__'
+        result = '   '
         line = 0
         for i in range(len(self.board)):
-            result += str(i+1) + '_'
+            result += str(i+1) + ' '
         result += '\n'
         for innerlist in self.board:
+
             line += 1
-            result += str(line) + '|'
-            for item in map(lambda x: 'x' if x == 1 else 'o' if x == -1 else '_', innerlist):
-                result += str(item) + '  '
+            if line < len(self.board):
+                result += str(line)+ ' ' + '|'
+            else:
+                result += str(line) + '|'
+            for item in map(lambda x: 'X' if x == 1 else 'O' if x == -1 else '_', innerlist):
+                result += str(item) + ' '
             result += '\n'
-        return result
+        return '```\n'+result+'\n```'
+#        return result
 
 
 class BigGame(Activity):
-    def __init__(self, player1, player2, bot, chat_id, board_size=100):
+    def __init__(self,  bot, message, board_size=10):
         self.board = Board(board_size)
         self.bot = bot
-        self.chat_id = chat_id
+        self.chat_id = message.chat_id
+
+        player1 = AI(bot, self.chat_id)
+        player2 = Player(bot, self.chat_id, message.from_user.first_name)
 
         self.players = dict({
             '1': player1,
@@ -45,27 +55,36 @@ class BigGame(Activity):
         self.finished = False
         self.winner = None
         self.current_player = self.current_player = PLAYER_TYPE['x']
+        self.again_choice = rkm([['One more time!'], ['Exit']])
 
     def first_query(self, bot, update):
         self.start()
 
     def process(self, query, bot, update):
-        pass
+        if query == 'One more time!':
+            self.__init__(bot, update.message, 10)
+            self.start()
+        else:
+            cell = tuple([int(x)-1 for x in query.split(" ")])
+            self.players['-1'].move(cell)
 
     def start(self):
         self.bot.sendMessage(
             chat_id=self.chat_id,
-            text="Game started.\n{}".format(self.board.print_board())
+            text="Game started.\n{}".format(self.board.print_board()),
+            parse_mode='Markdown'
         )
 
         self.players[str(self.current_player)].up()
+
 
     def make_a_move(self, player, cell):
         print("Big game: making move")
         if self.finished:
             self.bot.sendMessage(
                 chat_id=self.chat_id,
-                text="Game is already finished, winner is {}".format(self.winner.name)
+                text="Game is already finished, winner is {}".format(self.winner.name),
+                reply_markup=self.again_choice
             )
             return
         if player != self.current_player:
@@ -76,7 +95,7 @@ class BigGame(Activity):
         if not self.board.update(player, cell):
             self.bot.sendMessage(
                 chat_id=self.chat_id,
-                text="Move {} is invalid. Try another one".format((cell[0] + 1, cell[0] + 1))
+                text="Move {} is invalid. Try another one".format((cell[0] + 1, cell[1] + 1))
             )
             self.players[str(self.current_player)].up()
         else:
@@ -90,7 +109,8 @@ class BigGame(Activity):
             else:
                 self.bot.sendMessage(
                     chat_id=self.chat_id,
-                    text="Game is finished. {} won".format(self.winner.name)
+                    text="Game is finished. {} won".format(self.winner.name),
+                    reply_markup=self.again_choice
                 )
 
     def check_ending(self):
