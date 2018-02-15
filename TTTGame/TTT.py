@@ -10,7 +10,7 @@ class Game(Activity):
         self.board = Board.Board()
         self.abp = AlphaBetaPrunning.AlphaBetaPrunning()
 
-    def process(self, query):
+    def process(self, query, bot, update):
         pass
 
 

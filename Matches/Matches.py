@@ -15,23 +15,32 @@ class Matches(Activity):
     def __init__(self):
         self.currentNumber = 21
         self.start_choice = rkm([['Yes, I start'], ['After you']])
-        self.again_choice = rkm([['One more time!'], ['Enough']])
+        self.again_choice = rkm([['One more time!'], ['Exit']])
         self.three_choice = rkm([['1 match'], ['2 matches'], ['3 matches']])
 
-    def process(self, query):
-        pass
+    def first_query(self, bot, update):
+        bot.sendMessage(
+            chat_id=update.message.chat.id,
+            text="Do you want to play first?",
+            reply_markup=self.start_choice
+        )
 
-    def matches_choice(self, bot, update):
-        if update.message.text == 'Yes, I start':
-            msg = bot.sendMessage(
+    def process(self, query, bot, update):
+        self.matches_choice(query, bot, update)
+        #pass
+
+    def matches_choice(self, query, bot, update):
+        #if update.message.text == 'Yes, I start':
+        if query is 'Yes, I start':
+                msg = bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text="Choose how many matches to take",
                 reply_markup=self.three_choice
             )
-        elif update.message.text == 'After you':
+        elif query == 'After you':
             self.respondMove(bot, update)
         else:
-            self.makeMove(update.message.text[0], bot, update)
+            self.makeMove(query[0], bot, update)
 
 
 

@@ -11,7 +11,7 @@ class Wolfram(Activity):
         self.APPID = "3ULTAE-HA496WGW72"
         self.API = "http://api.wolframalpha.com/v2/query?input={}&appid={}"
 
-    def process(self, query):
+    def process(self, query, bot, update):
         self.ask(query)
 
     def ask(self, query):

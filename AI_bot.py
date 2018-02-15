@@ -11,7 +11,7 @@ from search_engine.index import SearchEngine
 from update2text import update2text
 
 
-main_menu = rkm([['WolframAlpha search'], ['Matches'], ['Tic tac toe'], ['XO 5 in a row']], one_time_keyboard=True)
+main_menu = rkm([['tic-tac-toe'], ['5 in a row'], ['matches'], ['wolfram']], one_time_keyboard=True)
 
 activity = None
 # search engine
@@ -29,20 +29,44 @@ def start(bot, update):
 def handle_message(bot, update):
     text = update2text(bot,update)
 
+    global search_engine
+
+
+
 
     global activity
 
     if activity == None:
-        
-        pass # TODO: f(text) -> choose game (globalHandler)
-             # Game =
+        result, similarity = search_engine.find(text)
+
+        if similarity<0.5:
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text='{}!\nPlease, speak slowly and clearly'.format(
+                    update.message.from_user.first_name),
+                reply_markup=main_menu
+            )
+            return
+
+        if result == 'tic-tac-toe':
+            activity = TTT()
+        elif result == '5 in a row':
+            activity = Big_xo()
+        elif result == 'matches':
+            activity = Matches()
+        elif result == 'wolfram':
+            activity = Wolfram()
+
+        activity.first_query(bot, update)
+
+
 
     elif text == 'Exit':  # EXIT sign sent from Game instance:
         activity = None
         start(bot, update)
 
     else:
-        activity.process(bot, update, text)
+        activity.process(text, bot, update)
         # Game will have user_id field
 
 
@@ -57,6 +81,8 @@ def handle_activity_choosing(text, user_session, bot_wrapper):
     else:
         # user_session['data']['handler'] = handlers[result]
         return True
+
+    return result
 
 
 # ------------------------ Init stuff --------------------
