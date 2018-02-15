@@ -105,9 +105,9 @@ def main():
     updater = Updater(BOT_API_TOKEN)
 
     # loads model to create embeddings
-    #SearchEngine.load_model()
+    SearchEngine.load_model()
     # initing search engine
-    #init_search_engine()
+    init_search_engine()
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
