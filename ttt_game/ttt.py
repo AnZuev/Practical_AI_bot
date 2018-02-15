@@ -1,7 +1,7 @@
 from ttt_game import board
 from ttt_game import alpha_beta_prunning
 from telegram import ReplyKeyboardMarkup as rkm
-from ai_bot import BotWrapper
+from libs import BotWrapper
 from enum import Enum
 
 

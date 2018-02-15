@@ -2,6 +2,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from telegram import ReplyKeyboardMarkup as rkm
 
+from libs import Session, BotWrapper
+
 from matches.game import Game as MatchesGame
 from ttt_game.ttt import Game as TTTGame
 from ttt_game.ttt import State as TTTState
@@ -20,32 +22,6 @@ search_engine = None
 
 # handlers
 handlers = dict()
-
-
-# ------------------------ etc --------------------
-
-class BotWrapper:
-    def __init__(self, bot, chat_id):
-        self.bot = bot
-        self.chat_id = chat_id
-
-    def send(self, message, buttons=None, audio_message=None):
-
-        # any pre-processing could be inserted here (translating and so on)
-        self.bot.send(
-            chatid=self.chat_id,
-            text=message,
-            reply_markup=buttons
-        )
-
-
-class Session:
-    def __init__(self, user_id):
-        self.data = dict()
-        self.user_id = user_id
-        self.handler = handle_activity_choosing
-
-# --------------------------------------------------
 
 
 # ------------------------ Handlers --------------------
@@ -71,7 +47,7 @@ def handle_message(bot, update):
 
     bot_wrapper = BotWrapper(bot, update.message.chat.id)
     user_id = update.message.from_user.id
-    user_session = sessions.get(user_id, Session(user_id))
+    user_session = sessions.get(user_id, Session(user_id, handlers['default']))
 
     while True:
         handler_result = user_session.handler(text, user_session, bot_wrapper)
@@ -208,6 +184,7 @@ def init_handlers():
 
 def main():
     # get from the environment
+    # for simplicity it is used no
     token = '499287770:AAFLFQYCd_RqSarNy2fQAheRqCL5o2B_1ds'
 
     """Run bot."""
@@ -237,7 +214,6 @@ def main():
     # SIGABRT. This should be used most of the time, since start_polling() is
     # non-blocking and will stop the bot gracefully.
     updater.idle()
-
 
 
 if __name__ == '__main__':
