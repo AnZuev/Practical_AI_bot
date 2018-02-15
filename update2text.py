@@ -9,7 +9,10 @@ YANDEX_API_KEY="877f02a7-6e01-494e-bb36-b999b189f036" # put your key here
 def update2text(update, BOT_API_TOKEN, locale): # locale="ru_RU" or "en_US"
     message=update.message
 
-    text=message.text # если в сообщении есть текст, то берём его для начала
+    text = ""
+
+    if message.text is not None:
+        text=message.text # если в сообщении есть текст, то берём его для начала
 
     if message.voice!=None: # если есть голос, то попробуем его распознать
         file_info = message.bot.get_file(message.voice.file_id) 
@@ -21,9 +24,11 @@ def update2text(update, BOT_API_TOKEN, locale): # locale="ru_RU" or "en_US"
 
         if len(answer)!=0:
             mv=max(answer, key=answer.get) # если удалось распознать речь, то берём лучшее совпадение
-            text=mv 
+            text=mv
 
-    if text==None or len(text)==0:
+    text = text.lower()
+
+    if len(text)==0:
         text=None # если в сообщении нет текста или не удалось распознать текст.
     return text
 
