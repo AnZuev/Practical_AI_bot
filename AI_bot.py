@@ -44,7 +44,7 @@ def handle_message(bot, update):
     global search_engine
     global users
 
-    users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en_US")
+    users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en-US")
 
     if users[update.message.from_user.id]['activity'] == None:
         result, similarity = search_engine.find(users[update.message.from_user.id]['text'])
@@ -53,8 +53,8 @@ def handle_message(bot, update):
         if similarity<0.5:
             bot.sendMessage(
                 chat_id=update.message.chat.id,
-                text='I didn\'t understand you, {}!\nPlease, speak slowly and clearly'.format(
-                    update.message.from_user.first_name),
+                text='I didn\'t understand you, {}!\nPlease, speak slowly and clearly. What did you want to say with this: \'{}\''.format(
+                    update.message.from_user.first_name, result),
                 reply_markup=main_menu
             )
 
