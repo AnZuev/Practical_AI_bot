@@ -9,7 +9,7 @@ from telegram import ReplyKeyboardMarkup as rkm
 #pip install yandex-translater
 
 BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
-YANDEX_API_KEY = "877f02a7-6e01-494e-bb36-b999b189f036"
+YANDEX_API_KEY = "trnsl.1.1.20180216T135415Z.6c2c180ee5e71822.f3756b401e3441b5214ed0110e9545ec335f8338"
 
 
 class Translator(Activity):
@@ -46,6 +46,7 @@ class Translator(Activity):
             self.translator.set_to_lang('ru')
             self.locale = "en-US"
         else:
+            print(query)
             ans = update2text(update, BOT_API_TOKEN, self.locale)
             if ans != None:
                 self.translator.set_text(ans)
