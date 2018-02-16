@@ -3,19 +3,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 import sent2vec
 
 
-def get_raw_facts(filename):
-    file = open(filename, 'r')
-    results = []
-    for line in file.readlines():
-        results.append("".join(line.split(".")[1:]).strip())
-    return results
-
-
-def to_vectors(facts, model):
+def to_vectors(rows, model):
     sent_vecs = []
-    for fact in facts:
-        sent_vecs.append(model.embed_sentence(fact))
-    return sent_vecs
+    for facts in rows:
+        res = []
+        for fact in facts:
+            res.append(model.embed_sentence(fact))
+        sent_vecs.append(np.array(res))
+    return np.array(sent_vecs).T
 
 
 class SearchEngine:
@@ -33,7 +28,10 @@ class SearchEngine:
         self.sent_vecs = to_vectors(self.raw_facts, SearchEngine.model)
 
     def find(self, sentence):
-        emb = SearchEngine.model.embed_sentence(sentence).reshape((1, -1))
-        similarity = cosine_similarity(emb, self.sent_vecs)[0]
-        return self.raw_facts[np.argmax(similarity)], max(similarity)
+        emb = np.array([self.model.embed_sentence(sentence)])
+        similarity = []
+        for inst in self.sent_vecs:
+            t = cosine_similarity(emb, inst)
+            similarity.append(max(t[0]))
+        return self.raw_facts[np.argmax(np.array(similarity))][0], max(similarity)
 

@@ -47,7 +47,7 @@ def handle_message(bot, update):
 
     users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en-US")
 
-    if users[update.message.from_user.id]['activity'] == None:
+    if not users[update.message.from_user.id]['activity']:
         result, similarity = search_engine.find(users[update.message.from_user.id]['text'].lower())
         #result, similarity = users[update.message.from_user.id]['text'], 1
 
@@ -93,7 +93,8 @@ def handle_message(bot, update):
 
 def init_search_engine():
     global search_engine
-    facts = ['tic-tac-toe', '5 in a row', 'matches', 'wolfram']
+    facts = [['tic-tac-toe', 'tictactoe', 'tic tac toe'], ['5 in a row', '5-in-a-row', '5 in row'], ['matches'],
+             ['wolfram', 'search for', 'find'], ['translator', 'translate']]
     search_engine = SearchEngine(facts)
 
 # --------------------------------------------------
