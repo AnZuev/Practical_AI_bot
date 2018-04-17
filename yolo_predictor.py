@@ -4,8 +4,11 @@ from ctypes import *
 import numpy as np
 import requests
 
+
 sys.path.append(os.path.join(os.getcwd(), 'darknet/python/'))
 from darknet import *
+from telegram import ReplyKeyboardMarkup as rkm
+
 
 
 class Yolo_predictor:
@@ -15,6 +18,7 @@ class Yolo_predictor:
         self.cfg, self.weights, metap = self.prepare_all_paths(preffix, "cfg/yolov3.cfg", "yolov3.weights", "cfg/coco.data")
         self.meta = load_meta(metap)
         self.net = load_net(self.cfg, self.weights, 0)
+        self.exit = rkm([['Exit']])
 
 
     def prepare_all_paths(self, path_to_darknet, path_to_cfg, path_to_weights, path_to_meta):
@@ -68,7 +72,7 @@ class Yolo_predictor:
 
 
 
-    def firt_query(self, bot, update):
+    def first_query(self, bot, update):
         update.messagebot.sendMessage(chat_id = update.message.chat_id, text = "Please send me photo you want to detect objects on.\nIt's ok if detecting will take several seconds, or one minute. Please be ready to wait.")
 
 
@@ -99,4 +103,4 @@ class Yolo_predictor:
         marked_img_path = img_path + "1.jpg"
         cv2.imwrite(marked_img_path, img)
         # sending saved image as answer
-        update.message.bot.send_photo(chat_id=update.message.chat_id, photo=open(marked_img_path, 'rb'))
+        update.message.bot.send_photo(chat_id=update.message.chat_id, photo=open(marked_img_path, 'rb'), reply_markup=self.exit)
