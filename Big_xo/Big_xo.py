@@ -5,11 +5,8 @@ from telegram import ReplyKeyboardMarkup as rkm
 
 
 class Board:
-
-
     def __init__(self, board_size):
         self.board = np.zeros((board_size, board_size), dtype=int)
-
 
     def update(self, player, cell):
         if self.board[cell[0]][cell[1]] == 0:
@@ -17,29 +14,30 @@ class Board:
             return True
         return False
 
-
     def print_board(self):
         result = '   '
         line = 0
         for i in range(len(self.board)):
-            result += str(i+1) + ' '
+            result += str(i + 1) + ' '
         result += '\n'
         for innerlist in self.board:
 
             line += 1
             if line < len(self.board):
-                result += str(line)+ ' ' + '|'
+                result += str(line) + ' ' + '|'
             else:
                 result += str(line) + '|'
             for item in map(lambda x: 'X' if x == 1 else 'O' if x == -1 else '_', innerlist):
                 result += str(item) + ' '
             result += '\n'
-        return '```\n'+result+'\n```'
-#        return result
+        return '```\n' + result + '\n```'
+
+
+# return result
 
 
 class BigGame(Activity):
-    def __init__(self,  bot, message, board_size=10):
+    def __init__(self, bot, message, board_size=10):
         self.board = Board(board_size)
         self.bot = bot
         self.chat_id = message.chat_id
@@ -61,19 +59,16 @@ class BigGame(Activity):
         self.current_player = self.current_player = PLAYER_TYPE['x']
         self.again_choice = rkm([['One more time!'], ['Exit']])
 
-
     def first_query(self, bot, update):
         self.start()
-
 
     def process(self, query, bot, update):
         if query == 'One more time!':
             self.__init__(bot, update.message, 10)
             self.start()
         else:
-            cell = tuple([int(x)-1 for x in query.split(" ")])
+            cell = tuple([int(x) - 1 for x in query.split(" ")])
             self.players['-1'].move(cell)
-
 
     def start(self):
         self.bot.sendMessage(
@@ -83,7 +78,6 @@ class BigGame(Activity):
         )
 
         self.players[str(self.current_player)].up()
-
 
     def make_a_move(self, player, cell):
         print("Big game: making move")
@@ -117,7 +111,6 @@ class BigGame(Activity):
                     text="Game is finished. {} won".format(self.winner.name),
                     reply_markup=self.again_choice
                 )
-
 
     def check_ending(self):
         my_scores, opponent_scores = score_game(self.board.board, PLAYER_TYPE['x'])

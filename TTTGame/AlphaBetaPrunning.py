@@ -3,60 +3,60 @@ from TTTGame import Board
 
 class AlphaBetaPrunning:
     def __init__(self):
-        self.maxDepth = float('inf')
+        self.max_depth = float('inf')
 
     def run(self, player, board, maxDepth):
         if maxDepth < 1:
             return False
-        self.maxDepth = maxDepth
+        self.max_depth = maxDepth
         self.__abprunning(player, board, float('-inf'), float('inf'), 0)
 
     def __abprunning(self, player, board, alpha, beta, currDepth):
-        if currDepth == self.maxDepth or board.isGameOver():
+        if currDepth == self.max_depth or board.is_game_over():
             return self.__score(player, board, currDepth)
         currDepth += 1
-        if board.getTurn() == player:
-            return self.__getMax(player, board, alpha, beta, currDepth)
+        if board.get_turn() == player:
+            return self.__get_max(player, board, alpha, beta, currDepth)
         else:
-            return self.__getMin(player, board, alpha, beta, currDepth)
+            return self.__get_min(player, board, alpha, beta, currDepth)
 
-    def __getMax(self, player, board, alpha, beta, currDepth):
-        bestMove = -1
-        for move in board.getAvaliableMoves():
-            modBoard = board.copy()
-            modBoard.move(move)
-            score = self.__abprunning(player, modBoard, alpha, beta, currDepth)
+    def __get_max(self, player, board, alpha, beta, currDepth):
+        best_move = -1
+        for move in board.get_available_moves():
+            mod_board = board.copy()
+            mod_board.move(move)
+            score = self.__abprunning(player, mod_board, alpha, beta, currDepth)
             if score > alpha:
                 alpha = score
-                bestMove = move
+                best_move = move
             if alpha >= beta:
                 break
-        if bestMove != -1:
-            board.move(bestMove)
+        if best_move != -1:
+            board.move(best_move)
         return alpha
 
-    def __getMin(self, player, board, alpha, beta, currDepth):
-        bestMove = -1
-        for move in board.getAvaliableMoves():
-            modBoard = board.copy()
-            modBoard.move(move)
-            score = self.__abprunning(player, modBoard, alpha, beta, currDepth)
+    def __get_min(self, player, board, alpha, beta, currDepth):
+        best_move = -1
+        for move in board.get_available_moves():
+            mod_board = board.copy()
+            mod_board.move(move)
+            score = self.__abprunning(player, mod_board, alpha, beta, currDepth)
             if score < beta:
                 beta = score
-                bestMove = move
+                best_move = move
             if alpha >= beta:
                 break
-        if bestMove != -1:
-            board.move(bestMove)
+        if best_move != -1:
+            board.move(best_move)
         return beta
 
     def __score(self, player, board, currDepth):
         if player == Board.State.Blank:
             return False
         opponent = Board.State.O if player == Board.State.X else Board.State.X
-        if board.isGameOver() and board.getWinner() == player:
+        if board.is_game_over() and board.get_winner() == player:
             return 10 - currDepth
-        elif board.isGameOver() and board.getWinner() == opponent:
+        elif board.is_game_over() and board.get_winner() == opponent:
             return -10 + currDepth
         else:
             return 0

@@ -9,16 +9,12 @@ from telegram import ReplyKeyboardMarkup as rkm
 from Activity import Activity
 
 
-
 class Matches(Activity):
-
-
     def __init__(self):
         self.start_choice = rkm([['Yes, I start'], ['After you']])
         self.again_choice = rkm([['One more time!'], ['Exit']])
         self.three_choice = rkm([['1 match'], ['2 matches'], ['3 matches']])
         self.current_number = 21
-
 
     def first_query(self, bot, update):
         self.current_number = 21
@@ -28,10 +24,8 @@ class Matches(Activity):
             reply_markup=self.start_choice
         )
 
-
     def process(self, query, bot, update):
         self.matches_choice(query, bot, update)
-
 
     def matches_choice(self, query, bot, update):
         if query == 'Yes, I start':
@@ -46,7 +40,6 @@ class Matches(Activity):
             self.first_query(bot, update)
         else:
             self.make_move(query[0], bot, update)
-
 
     def make_move(self, move, bot, update):
 
@@ -77,7 +70,6 @@ class Matches(Activity):
             self.currentNumber -= move
             return self.respond_move(bot, update)
 
-
     def respond_move(self, bot, update):
 
         if self.currentNumber == 1:
@@ -97,14 +89,12 @@ class Matches(Activity):
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text="I take " + str(answer) + ". Current number of matches: " +
-                str(self.get_current_number()) + "\nYour turn",
+                     str(self.get_current_number()) + "\nYour turn",
                 reply_markup=self.three_choice
             )
 
-
     def get_current_number(self):
         return self.currentNumber
-
 
     def max_possible_move(self):
         return min(3, self.currentNumber)

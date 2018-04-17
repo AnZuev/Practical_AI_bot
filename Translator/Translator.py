@@ -8,18 +8,14 @@ from config import BOT_API_TOKEN
 from config import YANDEX_API_KEY
 
 
-
 class Translator(Activity):
-
-
     def __init__(self):
 
         locale.setlocale(locale.LC_ALL, '')
         self.translator = Translater()
         self.translator.set_key(YANDEX_API_KEY)
         self.mode = 'EN-->RU'
-        self.defaultMarkup = rkm([['Exit']])
-
+        self.default_markup = rkm([['Exit']])
 
     def first_query(self, bot, update):
         self.__init__()
@@ -29,7 +25,6 @@ class Translator(Activity):
             text="Select languages:",
             reply_markup=self.mode
         )
-
 
     def process(self, query, bot, update):
 
@@ -44,7 +39,7 @@ class Translator(Activity):
             self.translator.set_to_lang('ru')
             self.locale = "en-US"
         else:
-            ans = update2text(update, BOT_API_TOKEN, self.locale)
+            ans = update2text(update, self.locale)
             if ans != None:
                 self.translator.set_text(ans)
                 result = self.translator.translate()
@@ -52,9 +47,8 @@ class Translator(Activity):
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text=result,
-                reply_markup=self.defaultMarkup
+                reply_markup=self.default_markup
             )
 
         if len(result) == 0:
             result = "What? try again, keep calm speak slowly and clearly."
-
