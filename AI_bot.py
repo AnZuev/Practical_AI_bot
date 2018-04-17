@@ -1,23 +1,34 @@
+import os
+
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from telegram import ReplyKeyboardMarkup as rkm
-
-from Matches.Matches import Matches
+from matches.Matches import Matches
 from TTTGame.TTT import Game
-from Big_xo.Big_xo import BigGame
+from big_xo.Big_xo import BigGame
 from WolframAlpha_api.Wolfram import Wolfram
 from Translator.Translator import Translator
-from search_engine.index import SearchEngine
+#from search_engine.index import SearchEngine
 
 from update2text import update2text
+from yolo_predictor import Yolo_predictor
 
+print(os.path.join(os.getcwd(), 'darknet/'))
+yolo = Yolo_predictor(os.path.join(os.getcwd(), 'darknet/'))
 
 BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
 search_engine = None
 users = {}
 
 
-main_menu = rkm([['tic-tac-toe'], ['5 in a row'], ['matches'], ['wolfram'], ['translator']], one_time_keyboard=True)
+main_menu = rkm([
+    ['tic-tac-toe'],
+    ['5 in a row'],
+    ['matches'],
+    ['wolfram'],
+    ['translator'],
+    ['detect objects']
+], one_time_keyboard=True)
 
 
 def start(bot, update):
@@ -29,7 +40,8 @@ def start(bot, update):
 
     bot.sendMessage(
         chat_id=update.message.chat.id,
-        text='Hi, {}!\nI\'m glad to see you here.\nPlease, say sending audiomessage or choose below what you want to open.'.format(update.message.from_user.first_name),
+        text='Hi, {}!\nI\'m glad to see you here.\nPlease, say sending audiomessage'
+             ' or choose below what you want to open.'.format(update.message.from_user.first_name),
         reply_markup=main_menu
     )
 
@@ -48,8 +60,8 @@ def handle_message(bot, update):
     users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en-US")
 
     if not users[update.message.from_user.id]['activity']:
-        result, similarity = search_engine.find(users[update.message.from_user.id]['text'].lower())
-        #result, similarity = users[update.message.from_user.id]['text'], 1
+        #result, similarity = search_engine.find(users[update.message.from_user.id]['text'].lower())
+        result, similarity = users[update.message.from_user.id]['text'], 1
 
         if similarity<0.5:
             bot.sendMessage(
@@ -79,10 +91,28 @@ def handle_message(bot, update):
             users[update.message.from_user.id]['activity'] = Translator()
             show_choice(bot, update, 'Translator')
 
-        users[update.message.from_user.id]['activity'].first_query(bot, update)
+        elif result == 'detect objects':
+            users[update.message.from_user.id]['activity'] = yolo
+            users[update.message.from_user.id]['text'] = 'detect object'
+            show_choice(bot, update, 'Object detection')
+            bot.sendMessage(
+                chat_id=update.message.chat.id,
+                text='Send photo, please'
+            )
+
+        #users[update.message.from_user.id]['activity'].first_query(bot, update)
 
     elif users[update.message.from_user.id]['text'] == 'Exit':
         users[update.message.from_user.id]['activity'] = None
+        start(bot, update)
+
+    elif users[update.message.from_user.id]['activity'] == yolo:
+        bot.sendMessage(
+            chat_id=update.message.chat.id,
+            text='This operation is a bit time-consuming. It is okay to wait up to 30 seconds'
+        )
+        yolo.do_work(update)
+        print('done')
         start(bot, update)
 
     else:
@@ -95,7 +125,7 @@ def init_search_engine():
     global search_engine
     facts = [['tic-tac-toe', 'tictactoe', 'tic tac toe'], ['5 in a row', '5-in-a-row', '5 in row'], ['matches'],
              ['wolfram', 'search for', 'find'], ['translator', 'translate']]
-    search_engine = SearchEngine(facts)
+    #search_engine = SearchEngine(facts)
 
 # --------------------------------------------------
 
@@ -106,9 +136,9 @@ def main():
     updater = Updater(BOT_API_TOKEN)
 
     # loads model to create embeddings
-    SearchEngine.load_model()
+    #SearchEngine.load_model()
     # initing search engine
-    init_search_engine()
+    #init_search_engine()
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher

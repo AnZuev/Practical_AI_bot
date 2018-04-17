@@ -1,4 +1,4 @@
-from Big_xo.libs import *
+from big_xo.libs import *
 
 
 class Player:

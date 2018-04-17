@@ -1,6 +1,6 @@
 from Activity import Activity
-from Big_xo.libs import *
-from Big_xo.players import *
+from big_xo.libs import *
+from big_xo.players import *
 from telegram import ReplyKeyboardMarkup as rkm
 
 

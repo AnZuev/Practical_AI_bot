@@ -2,51 +2,45 @@ import requests
 import uuid
 from bs4 import BeautifulSoup
 
+YANDEX_API_KEY = "877f02a7-6e01-494e-bb36-b999b189f036"  # put your key here
 
-YANDEX_API_KEY="877f02a7-6e01-494e-bb36-b999b189f036" # put your key here
 
-
-def update2text(update, BOT_API_TOKEN, locale): # locale="ru-RU" or "en-US"
-    message=update.message
+def update2text(update, BOT_API_TOKEN, locale):  # locale="ru-RU" or "en-US"
+    message = update.message
 
     text = ""
 
     if message.text is not None:
-        text=message.text # если в сообщении есть текст, то берём его для начала
+        text = message.text  # если в сообщении есть текст, то берём его для начала
 
-    if message.voice!=None: # если есть голос, то попробуем его распознать
+    if message.voice != None:  # если есть голос, то попробуем его распознать
         file_info = message.bot.get_file(message.voice.file_id)
 
-        file = requests.get(file_info.file_path) # вроде точно так из телеги файлы выкачиваются
+        file = requests.get(file_info.file_path)  # вроде точно так из телеги файлы выкачиваются
 
         UUID = str(uuid.uuid4()).replace("-", "")
-        answer = speech_2_text(file.content, UUID, locale) # пробуем распознать
+        answer = speech_2_text(file.content, UUID, locale)  # пробуем распознать
 
-        if len(answer)!=0:
-            mv=max(answer, key=answer.get) # если удалось распознать речь, то берём лучшее совпадение
-            text=mv
+        if len(answer) != 0:
+            mv = max(answer, key=answer.get)  # если удалось распознать речь, то берём лучшее совпадение
+            text = mv
 
-
-    if len(text)==0:
-        text=None # если в сообщении нет текста или не удалось распознать текст.
+    if len(text) == 0:
+        text = None  # если в сообщении нет текста или не удалось распознать текст.
     return text
 
 
-
-
 def speech_2_text(data, uid, lang):
-    
     url = "https://asr.yandex.net/asr_xml?uuid={}&key={}&topic={}&lang={}&disableAntimat={}"
     url = url.format(uid, YANDEX_API_KEY, "queries", lang, "true")
-    
 
-    headers = {'Content-Type' : 'audio/ogg;codecs=opus', 'Content-Length' : str(len(data))}
+    headers = {'Content-Type': 'audio/ogg;codecs=opus', 'Content-Length': str(len(data))}
 
     resp = requests.post(url, data=data, headers=headers)
-    
-    dom = BeautifulSoup(resp.text, "lxml")    
-    result = dict((var.string, float(var['confidence']))   
-                  for var 
+
+    dom = BeautifulSoup(resp.text, "lxml")
+    result = dict((var.string, float(var['confidence']))
+                  for var
                   in dom.html.body.recognitionresults.findAll("variant"))
-    
+
     return result
