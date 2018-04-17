@@ -3,7 +3,7 @@ from yandex import Translater
 from update2text import update2text
 from telegram import ReplyKeyboardMarkup as rkm
 
-from Activity import Activity
+from activity import Activity
 from config import BOT_API_TOKEN
 from config import YANDEX_API_KEY
 

@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import urllib
 from telegram import ReplyKeyboardMarkup as rkm
 
-from Activity import Activity
+from activity import Activity
 from config import APPID
 
 

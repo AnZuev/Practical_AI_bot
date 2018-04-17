@@ -3,7 +3,7 @@ from copy import deepcopy
 
 
 class State(Enum):
-    Blank = "-"
+    blank = "-"
     X = "X"
     O = "O"
 
@@ -11,10 +11,10 @@ class State(Enum):
 class Board:
     def __init__(self):
         self.board_side = 3
-        self.winner = State.Blank
+        self.winner = State.blank
         self.player_turn = State.X
         self.available_moves = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-        self.board = [[State.Blank for j in range(self.board_side)] for i in range(self.board_side)]
+        self.board = [[State.blank for j in range(self.board_side)] for i in range(self.board_side)]
         self.move_counter = 0
         self.game_over = False
 
@@ -23,24 +23,26 @@ class Board:
 
     def reset(self):
         self.board_side = 3
-        self.winner = State.Blank
+        self.winner = State.blank
         self.player_turn = State.X
         self.available_moves = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-        self.board = [[State.Blank for j in range(self.board_side)] for i in range(self.board_side)]
+        self.board = [[State.blank for j in range(self.board_side)] for i in range(self.board_side)]
         self.move_counter = 0
         self.game_over = False
 
     def __move(self, x, y):
         if self.game_over:
             return False
-        if self.board[y][x] == State.Blank:
+
+        if self.board[y][x] == State.blank:
             self.board[y][x] = self.player_turn
         else:
             return False
+
         self.move_counter += 1
         self.available_moves.remove(y * self.board_side + x)
         if self.move_counter == self.board_side ** 2:
-            self.winner = State.Blank
+            self.winner = State.blank
             self.game_over = True
         self.__check_row(y)
         self.__check_column(x)

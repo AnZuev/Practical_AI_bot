@@ -1,4 +1,4 @@
-from TTTGame import Board
+from ttt_game import board
 
 
 class AlphaBetaPrunning:
@@ -51,9 +51,9 @@ class AlphaBetaPrunning:
         return beta
 
     def __score(self, player, board, currDepth):
-        if player == Board.State.Blank:
+        if player == board.State.Blank:
             return False
-        opponent = Board.State.O if player == Board.State.X else Board.State.X
+        opponent = board.State.O if player == board.State.X else board.State.X
         if board.is_game_over() and board.get_winner() == player:
             return 10 - currDepth
         elif board.is_game_over() and board.get_winner() == opponent:

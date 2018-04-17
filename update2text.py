@@ -4,22 +4,21 @@ from bs4 import BeautifulSoup
 from config import YANDEX_TRANS_KEY
 
 
-
 def update2text(update, locale):  # locale="ru-RU" or "en-US"
     message = update.message
 
     text = ""
 
-    if message.text is not None:
+    if message.text:
         text = message.text  # если в сообщении есть текст, то берём его для начала
 
-    if message.voice != None:  # если есть голос, то попробуем его распознать
+    if message.voice:  # если есть голос, то попробуем его распознать
         file_info = message.bot.get_file(message.voice.file_id)
 
         file = requests.get(file_info.file_path)  # вроде точно так из телеги файлы выкачиваются
 
-        UUID = str(uuid.uuid4()).replace("-", "")
-        answer = speech_2_text(file.content, UUID, locale)  # пробуем распознать
+        uu_id = str(uuid.uuid4()).replace("-", "")
+        answer = speech_2_text(file.content, uu_id, locale)  # пробуем распознать
 
         if len(answer) != 0:
             mv = max(answer, key=answer.get)  # если удалось распознать речь, то берём лучшее совпадение

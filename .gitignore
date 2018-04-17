@@ -1,7 +1,6 @@
-
 .idea/*
 *.pyc
 config.py
-darknet
+darknet/
 imgs/
-yolov3.weights
+*/__pychache__

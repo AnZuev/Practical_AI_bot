@@ -1,6 +1,6 @@
-from Activity import Activity
-from TTTGame import Board
-from TTTGame import AlphaBetaPrunning
+from activity import Activity
+from ttt_game import board
+from ttt_game import alpha_beta_prunning
 from telegram import ReplyKeyboardMarkup as rkm
 
 
@@ -8,8 +8,8 @@ class Game(Activity):
     def __init__(self):
         self.difficulty = None
         self.wish = None
-        self.board = Board.Board()
-        self.abp = AlphaBetaPrunning.AlphaBetaPrunning()
+        self.board = board.Board()
+        self.abp = alpha_beta_prunning.AlphaBetaPrunning()
 
     def first_query(self, bot, update):
         self.__init__()
@@ -19,10 +19,10 @@ class Game(Activity):
         if query == 'Yes!':
             self.first_query(bot, update)
 
-        elif self.difficulty == None:
+        elif not self.difficulty:
             self.set_difficulty(query, bot, update)
 
-        elif self.wish == None:
+        elif not self.wish:
             self.order(query, bot, update)
 
         else:
@@ -107,7 +107,7 @@ class Game(Activity):
 
     def __print_winner(self, bot, update):
         winner = self.board.get_winner()
-        if winner == Board.State.Blank:
+        if winner == board.State.Blank:
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text="Draw"
