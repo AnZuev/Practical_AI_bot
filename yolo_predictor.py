@@ -2,22 +2,20 @@ import sys, os
 import cv2
 from ctypes import *
 import numpy as np
-from skimage import io
 import requests
-import datetime
-
 
 sys.path.append(os.path.join(os.getcwd(), 'darknet/python/'))
 from darknet import *
 
 
 class Yolo_predictor:
-
+    
     def __init__(self, preffix):
         # prepare model for usage
         self.cfg, self.weights, metap = self.prepare_all_paths(preffix, "cfg/yolov3.cfg", "yolov3.weights", "cfg/coco.data")
         self.meta = load_meta(metap)
         self.net = load_net(self.cfg, self.weights, 0)
+
 
     def prepare_all_paths(self, path_to_darknet, path_to_cfg, path_to_weights, path_to_meta):
         prefix = path_to_darknet.encode('ascii')
@@ -27,8 +25,8 @@ class Yolo_predictor:
         meta_path = prefix + path_to_meta.encode('ascii')
 
         return (cfg_path, weights_path, meta_path)
-    
-    
+
+
     def preprocess_coords(self, coords):
         # since coordintes from yolo defferent from cv2 we need to transform it
         
@@ -49,15 +47,16 @@ class Yolo_predictor:
 
         return (point1, point2, point3)
 
+
     def get_image_path(self, update):
     
         # getting message from update
         message = update.message
         img_path = None
         
-        # attenpt to get photo from message and save it on server
+        # attempt to get photo from message and save it on server
         if message.photo != None:
-            photo_file = message.bot.get_file(message.photo[2].file_id)
+            img_telegram_object = message.bot.get_file(message.photo[2].file_id)
             responce = requests.get(img_telegram_object.file_path)
             img_path = os.path.join(os.getcwd(), 'imgs', img_telegram_object.file_id)
             
@@ -69,14 +68,18 @@ class Yolo_predictor:
 
 
 
-    def process(self, update):
+    def firt_query(self, bot, update):
+        update.messagebot.sendMessage(chat_id = update.message.chat_id, text = "Please send me photo you want to detect objects on.\nIt's ok if detecting will take several seconds, or one minute. Please be ready to wait.")
+
+
+    def process(self, choice, bot, update):
     
         # color & font for bounding boxes and names
         color = (177, 33, 211)
         font = cv2.FONT_HERSHEY_SIMPLEX
 
         img_path = self.get_image_path(update)
-        if img_path==None:
+        if img_path == None:
             update.messagebot.sendMessage(chat_id = update.message.chat_id, text = "Now you come to me, and you say: \"Mr. AI Bot, give me the answer, what is on the picture.\" But you don't ask with respect.")
             return
             
