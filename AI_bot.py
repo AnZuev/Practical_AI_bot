@@ -5,7 +5,7 @@ from telegram.ext.filters import Filters
 from telegram import ReplyKeyboardMarkup as rkm
 from matches.Matches import Matches
 from TTTGame.TTT import Game
-from big_xo.Big_xo import BigGame
+from big_xo.big_xo import BigGame
 from WolframAlpha_api.Wolfram import Wolfram
 from Translator.Translator import Translator
 #from search_engine.index import SearchEngine

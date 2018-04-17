@@ -77,7 +77,6 @@ class BigGame(Activity):
 
         self.players[str(self.current_player)].up()
 
-
     def make_a_move(self, player, cell):
         print("Big game: making move")
         if self.finished:
