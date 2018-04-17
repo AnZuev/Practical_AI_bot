@@ -4,12 +4,12 @@ import urllib
 from telegram import ReplyKeyboardMarkup as rkm
 
 from Activity import Activity
+from config import APPID
 
 
 
 class Wolfram(Activity):
     def __init__(self):
-        self.APPID = "3ULTAE-HA496WGW72"
         self.API = "http://api.wolframalpha.com/v2/query?input={}&appid={}"
         self.exit = rkm([['Exit']])
 
@@ -31,7 +31,7 @@ class Wolfram(Activity):
 
 
     def ask(self, query, bot, update):
-        resp = requests.get(self.API.format(urllib.parse.quote_plus(query), self.APPID))
+        resp = requests.get(self.API.format(urllib.parse.quote_plus(query), APPID))
         if resp.status_code != 200:
             return None
         dom = BeautifulSoup(resp.text, "lxml")

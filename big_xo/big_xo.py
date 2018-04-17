@@ -1,6 +1,6 @@
 from Activity import Activity
-from big_xo.libs import *
-from big_xo.players import *
+from Big_xo.libs import *
+from Big_xo.players import *
 from telegram import ReplyKeyboardMarkup as rkm
 
 
@@ -76,6 +76,7 @@ class BigGame(Activity):
         )
 
         self.players[str(self.current_player)].up()
+
 
     def make_a_move(self, player, cell):
         print("Big game: making move")

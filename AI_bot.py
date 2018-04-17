@@ -3,24 +3,22 @@ import os
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from telegram import ReplyKeyboardMarkup as rkm
-from matches.Matches import Matches
-from TTTGame.TTT import Game
-from big_xo.big_xo import BigGame
-from WolframAlpha_api.Wolfram import Wolfram
+
+from Big_xo.Big_xo import BigGame
+from Matches.Matches import Matches
 from Translator.Translator import Translator
+from TTTGame.TTT import Game
+from WolframAlpha_api.Wolfram import Wolfram
 #from search_engine.index import SearchEngine
 
+from config import BOT_API_TOKEN
 from update2text import update2text
 from yolo_predictor import Yolo_predictor
 
 print(os.path.join(os.getcwd(), 'darknet/'))
 yolo = Yolo_predictor(os.path.join(os.getcwd(), 'darknet/'))
-
-BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
 search_engine = None
 users = {}
-
-
 main_menu = rkm([
     ['tic-tac-toe'],
     ['5 in a row'],
@@ -63,7 +61,7 @@ def handle_message(bot, update):
         #result, similarity = search_engine.find(users[update.message.from_user.id]['text'].lower())
         result, similarity = users[update.message.from_user.id]['text'], 1
 
-        if similarity<0.5:
+        if similarity < 0.5:
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text='I didn\'t understand you, {}!\nPlease, speak slowly and clearly. What did you want to say with this: \'{}\''.format(
@@ -95,24 +93,11 @@ def handle_message(bot, update):
             users[update.message.from_user.id]['activity'] = yolo
             users[update.message.from_user.id]['text'] = 'detect object'
             show_choice(bot, update, 'Object detection')
-            bot.sendMessage(
-                chat_id=update.message.chat.id,
-                text='Send photo, please'
-            )
 
-        #users[update.message.from_user.id]['activity'].first_query(bot, update)
+        users[update.message.from_user.id]['activity'].first_query(bot, update)
 
     elif users[update.message.from_user.id]['text'] == 'Exit':
         users[update.message.from_user.id]['activity'] = None
-        start(bot, update)
-
-    elif users[update.message.from_user.id]['activity'] == yolo:
-        bot.sendMessage(
-            chat_id=update.message.chat.id,
-            text='This operation is a bit time-consuming. It is okay to wait up to 30 seconds'
-        )
-        yolo.do_work(update)
-        print('done')
         start(bot, update)
 
     else:
@@ -132,13 +117,12 @@ def init_search_engine():
 
 def main():
     """Run bot."""
-    global BOT_API_TOKEN
     updater = Updater(BOT_API_TOKEN)
 
     # loads model to create embeddings
-    #SearchEngine.load_model()
+    # SearchEngine.load_model()
     # initing search engine
-    #init_search_engine()
+    # init_search_engine()
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher

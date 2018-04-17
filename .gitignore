@@ -1,6 +1,7 @@
 
 .idea/*
 *.pyc
+config.py
 darknet
 imgs/
 yolov3.weights
