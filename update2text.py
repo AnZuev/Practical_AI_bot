@@ -1,11 +1,11 @@
 import requests
 import uuid
 from bs4 import BeautifulSoup
+from config import YANDEX_TRANS_KEY
 
-YANDEX_API_KEY = "877f02a7-6e01-494e-bb36-b999b189f036"  # put your key here
 
 
-def update2text(update, BOT_API_TOKEN, locale):  # locale="ru-RU" or "en-US"
+def update2text(update, locale):  # locale="ru-RU" or "en-US"
     message = update.message
 
     text = ""
@@ -32,7 +32,7 @@ def update2text(update, BOT_API_TOKEN, locale):  # locale="ru-RU" or "en-US"
 
 def speech_2_text(data, uid, lang):
     url = "https://asr.yandex.net/asr_xml?uuid={}&key={}&topic={}&lang={}&disableAntimat={}"
-    url = url.format(uid, YANDEX_API_KEY, "queries", lang, "true")
+    url = url.format(uid, YANDEX_TRANS_KEY, "queries", lang, "true")
 
     headers = {'Content-Type': 'audio/ogg;codecs=opus', 'Content-Length': str(len(data))}
 

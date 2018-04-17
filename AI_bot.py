@@ -55,7 +55,7 @@ def handle_message(bot, update):
     global search_engine
     global users
 
-    users[update.message.from_user.id]['text'] = update2text(update, BOT_API_TOKEN, "en-US")
+    users[update.message.from_user.id]['text'] = update2text(update, "en-US")
 
     if not users[update.message.from_user.id]['activity']:
         #result, similarity = search_engine.find(users[update.message.from_user.id]['text'].lower())

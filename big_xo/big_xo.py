@@ -5,14 +5,18 @@ from telegram import ReplyKeyboardMarkup as rkm
 
 
 class Board:
+
+
     def __init__(self, board_size):
         self.board = np.zeros((board_size, board_size), dtype=int)
+
 
     def update(self, player, cell):
         if self.board[cell[0]][cell[1]] == 0:
             self.board[int(cell[0])][int(cell[1])] = player
             return True
         return False
+
 
     def print_board(self):
         result = '   '
@@ -57,8 +61,10 @@ class BigGame(Activity):
         self.current_player = self.current_player = PLAYER_TYPE['x']
         self.again_choice = rkm([['One more time!'], ['Exit']])
 
+
     def first_query(self, bot, update):
         self.start()
+
 
     def process(self, query, bot, update):
         if query == 'One more time!':
@@ -67,6 +73,7 @@ class BigGame(Activity):
         else:
             cell = tuple([int(x)-1 for x in query.split(" ")])
             self.players['-1'].move(cell)
+
 
     def start(self):
         self.bot.sendMessage(
@@ -112,6 +119,7 @@ class BigGame(Activity):
                     text="Game is finished. {} won".format(self.winner.name),
                     reply_markup=self.again_choice
                 )
+
 
     def check_ending(self):
         my_scores, opponent_scores = score_game(self.board.board, PLAYER_TYPE['x'])
