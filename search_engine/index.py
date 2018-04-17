@@ -34,4 +34,3 @@ class SearchEngine:
             t = cosine_similarity(emb, inst)
             similarity.append(max(t[0]))
         return self.raw_facts[np.argmax(np.array(similarity))][0], max(similarity)
-

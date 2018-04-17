@@ -1,27 +1,21 @@
-from Activity import Activity
 import locale
 from yandex import Translater
 from update2text import update2text
 from telegram import ReplyKeyboardMarkup as rkm
 
-# from AI_bot import BOT_API_TOKEN
-
-#pip install yandex-translater
-
-BOT_API_TOKEN = "496585400:AAHBJEfVNDTcu-pIVne_xuBUf8OW_womLwg"
-YANDEX_API_KEY = "trnsl.1.1.20180216T135415Z.6c2c180ee5e71822.f3756b401e3441b5214ed0110e9545ec335f8338"
+from activity import Activity
+from config import BOT_API_TOKEN
+from config import YANDEX_API_KEY
 
 
 class Translator(Activity):
-
     def __init__(self):
-        global YANDEX_API_KEY
 
         locale.setlocale(locale.LC_ALL, '')
         self.translator = Translater()
         self.translator.set_key(YANDEX_API_KEY)
         self.mode = 'EN-->RU'
-        self.defaultMarkup = rkm([['Exit']])
+        self.default_markup = rkm([['Exit']])
 
     def first_query(self, bot, update):
         self.__init__()
@@ -33,7 +27,6 @@ class Translator(Activity):
         )
 
     def process(self, query, bot, update):
-        global BOT_API_TOKEN
 
         result = ""
 
@@ -46,8 +39,7 @@ class Translator(Activity):
             self.translator.set_to_lang('ru')
             self.locale = "en-US"
         else:
-            print(query)
-            ans = update2text(update, BOT_API_TOKEN, self.locale)
+            ans = update2text(update, self.locale)
             if ans != None:
                 self.translator.set_text(ans)
                 result = self.translator.translate()
@@ -55,10 +47,8 @@ class Translator(Activity):
             bot.sendMessage(
                 chat_id=update.message.chat.id,
                 text=result,
-                reply_markup=self.defaultMarkup
+                reply_markup=self.default_markup
             )
 
         if len(result) == 0:
             result = "What? try again, keep calm speak slowly and clearly."
-
-        # return result

@@ -1,6 +1,5 @@
-from Activity import Activity
-from Big_xo.libs import *
-from Big_xo.players import *
+from activity import Activity
+from big_xo.players import *
 from telegram import ReplyKeyboardMarkup as rkm
 
 
@@ -18,24 +17,26 @@ class Board:
         result = '   '
         line = 0
         for i in range(len(self.board)):
-            result += str(i+1) + ' '
+            result += str(i + 1) + ' '
         result += '\n'
         for innerlist in self.board:
 
             line += 1
             if line < len(self.board):
-                result += str(line)+ ' ' + '|'
+                result += str(line) + ' ' + '|'
             else:
                 result += str(line) + '|'
             for item in map(lambda x: 'X' if x == 1 else 'O' if x == -1 else '_', innerlist):
                 result += str(item) + ' '
             result += '\n'
-        return '```\n'+result+'\n```'
-#        return result
+        return '```\n' + result + '\n```'
+
+
+# return result
 
 
 class BigGame(Activity):
-    def __init__(self,  bot, message, board_size=10):
+    def __init__(self, bot, message, board_size=10):
         self.board = Board(board_size)
         self.bot = bot
         self.chat_id = message.chat_id
@@ -65,7 +66,7 @@ class BigGame(Activity):
             self.__init__(bot, update.message, 10)
             self.start()
         else:
-            cell = tuple([int(x)-1 for x in query.split(" ")])
+            cell = tuple([int(x) - 1 for x in query.split(" ")])
             self.players['-1'].move(cell)
 
     def start(self):
@@ -76,7 +77,6 @@ class BigGame(Activity):
         )
 
         self.players[str(self.current_player)].up()
-
 
     def make_a_move(self, player, cell):
         print("Big game: making move")
@@ -101,10 +101,8 @@ class BigGame(Activity):
         else:
 
             self.check_ending()
-            # print("\n")
             self.current_player = -1 * self.current_player
             if not self.finished:
-                print("Asking another player to move")
                 self.players[str(self.current_player)].up()
             else:
                 self.bot.sendMessage(

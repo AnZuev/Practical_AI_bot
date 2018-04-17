@@ -1,3 +1,6 @@
-
 .idea/*
 *.pyc
+config.py
+darknet/
+imgs/
+*/__pychache__

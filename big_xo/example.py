@@ -1,5 +1,5 @@
-from Big_xo.game import *
-from Big_xo.players import *
+from big_xo.big_xo import *
+from big_xo.players import *
 
 
 ai = AI("AI Player")

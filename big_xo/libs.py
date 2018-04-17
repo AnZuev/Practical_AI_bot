@@ -223,7 +223,7 @@ def evaluate_window(window):
     # print(characterize)
     x_window_info, o_window_info = patterns_extraction(characterize, x_window_info, o_window_info, 2)
 
-    return (x_window_info, o_window_info)
+    return x_window_info, o_window_info
 
 
 def get_max_element_index_from_2d_matrix(matrix):
@@ -241,7 +241,7 @@ def get_total_scores(my_scores, opponent_scores):
     my_total_score = np.sum(my_scores)
     opponent_total_score = np.sum(opponent_scores)
     difference = my_total_score - opponent_total_score
-    return (my_total_score, opponent_total_score, difference)
+    return my_total_score, opponent_total_score, difference
 
 
 def score_game(board, player_type):
