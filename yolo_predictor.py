@@ -85,6 +85,10 @@ class YoloPredictor:
         img = cv2.imread(img_path)
 
         prediction = detect(self.net, self.meta, img_path.encode('ascii'))
+        if not prediction:
+            update.message.bot.sendMessage(chat_id=update.message.chat_id,
+                                          text="Something strange on the image. I can not understand it.\n Please never send this image to me again.")
+            return
 
         for k in prediction:
             # print("Name: ",k[0],"Predict %: ",k[1],"X: ",k[2][0],"Y: ",k[2][1],"W: ",k[2][2],"Z: ",k[2][3],'\n')
