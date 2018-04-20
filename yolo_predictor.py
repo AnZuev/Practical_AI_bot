@@ -87,7 +87,8 @@ class YoloPredictor:
         prediction = detect(self.net, self.meta, img_path.encode('ascii'))
         if not prediction:
             update.message.bot.sendMessage(chat_id=update.message.chat_id,
-                                          text="Something strange on the image. I can not understand it.\n Please never send this image to me again.")
+                                           text="Something strange on the image. I can not understand it.\n Please "
+                                                "never send this image to me again.")
             return
 
         for k in prediction:
