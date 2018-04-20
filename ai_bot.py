@@ -1,4 +1,5 @@
 import os
+import random
 
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
@@ -31,6 +32,13 @@ MAIN_MENU = rkm([
 ], one_time_keyboard=True)
 
 
+
+
+
+RANDOM_ANSWERS = ["You won", "You lost", "RKN has blocked this message"]
+RANDOM_MEMES = ['maga.jpg']
+
+
 def start(bot, update):
     global USERS
     print("Start for user", str(update.message.from_user.id))
@@ -56,12 +64,33 @@ def show_choice(bot, update, choice):
 def handle_message(bot, update):
     global SEARCH_ENGINE
     global USERS
+    global RANDOM_ANSWERS
+    global RANDOM_MEMES
 
     USERS[update.message.from_user.id]['text'] = update2text(update, "en-US")
 
     if not USERS[update.message.from_user.id]['activity']:
         result, similarity = SEARCH_ENGINE.find(USERS[update.message.from_user.id]['text'].lower())
         #result, similarity = USERS[update.message.from_user.id]['text'], 1
+
+
+        if random.random() < 0.4:  # probability of answering with random shit
+            if random.random() < 0.5: # probability of answering with text / picture
+                ans_id = random.randint(0, len(RANDOM_ANSWERS)-1)
+                ans = RANDOM_ANSWERS[ans_id]
+                bot.sendMessage(
+                    chat_id=update.message.chat.id,
+                    text= ans,
+                    reply_markup=main()
+                )
+            else:
+                pic_path = random.random(0, len(RANDOM_MEMES)-1)
+                bot.sendPhoto(chat_id=update.message.chat.id, photo=open('Pictures/' + pic_path, 'rb'))
+
+            return
+
+
+
 
         if similarity < 0.5:
             bot.sendMessage(
